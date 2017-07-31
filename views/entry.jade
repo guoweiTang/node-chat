@@ -1,0 +1,14 @@
+extends layout
+block content
+	ul.login_userlist
+		for user in users
+			li
+				span #{user.name}
+				a(href="#") 发起会话
+				
+
+	script(src="/node_modules/jQuery/dist/jquery.min.js")
+	script(src="/common/components/esl/src/esl.js")
+	script require(['/index/main'])
+
+
