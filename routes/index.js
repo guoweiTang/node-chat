@@ -46,7 +46,12 @@ let db = mongoose.createConnection('localhost', 'mychat');
 // })
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Express' });
+    //已登录
+    if(req.session.user){
+        res.render('index/index');
+    }else{
+        res.redirect('/login.html');
+    }
 });
 router.get('/chat-test/getSessionList.json', function(req, res, next) {
     res.send({

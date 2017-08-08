@@ -9,6 +9,7 @@ let cookieSession = require('cookie-session');
 
 var index = require('./routes/index');
 var entry = require('./routes/entry');
+var passport = require('./routes/passport');
 
 var app = express();
 
@@ -28,8 +29,14 @@ app.use(cookieSession({
 }))
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/entry', entry);
+//注入全局变量
+app.use(function(req, res, next){
+  app.locals.session = req.session;
+  next();
+})
+app.use(index);
+app.use(entry);
+app.use(passport);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

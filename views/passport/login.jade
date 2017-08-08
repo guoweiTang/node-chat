@@ -1,0 +1,15 @@
+extends ../layout
+block styles
+	link(rel='stylesheet', href='/passport/main.css')
+block content
+	.container
+		h1 登录
+		form
+			input(type="text", name="user", placeholder="请输入用户名")
+			input(type="password", name="password", placeholder="请输入密码")
+			input(type="submit", value="登录")
+			p 还没账号，
+				a(href="/register.html") 立即注册
+	
+block scripts
+	script	require(["/passport/login"]);
