@@ -95,7 +95,7 @@
   height: 20px;
   margin-top: 9px;
   content: ' ';
-  background: url(./img/msg-icon.png) no-repeat center center;
+  background: url(../img/msg-icon.png) no-repeat center center;
 }
 #imessage .people_container .unread_count {
   position: absolute;
@@ -298,7 +298,7 @@
   height: 20px;
   margin-top: 9px;
   content: ' ';
-  background: url(./img/msg-icon.png) no-repeat center center;
+  background: url(../img/msg-icon.png) no-repeat center center;
 }
 #imessage .session_bubble.myself dt,
 #imessage .session_bubble.myself dd {
@@ -308,17 +308,17 @@
 #imessage .session_bubble.myself dd .arrow {
   left: auto;
   right: -5px;
-  background-image: url(./img/arrow2.png);
+  background-image: url(../img/arrow2.png);
 }
 #imessage .session_bubble.myself dd {
   background-color: #3dca99;
   color: #fff;
 }
 #imessage .session_bubble.myself dd.playing .audio-icon {
-  background-image: url(./img/voice-white.gif);
+  background-image: url(../img/voice-white.gif);
 }
 #imessage .session_bubble.myself dd .audio-icon {
-  background-image: url(./img/voice-white.png);
+  background-image: url(../img/voice-white.png);
 }
 #imessage .session_bubble.myself dd .time {
   right: auto;
@@ -357,7 +357,7 @@
   cursor: pointer;
 }
 #imessage .session_bubble dd.playing .audio-icon {
-  background-image: url(./img/voice.gif);
+  background-image: url(../img/voice.gif);
 }
 #imessage .session_bubble dd .arrow {
   display: block;
@@ -366,14 +366,14 @@
   top: 7px;
   width: 5px;
   height: 11px;
-  background: url(./img/arrow.png) no-repeat;
+  background: url(../img/arrow.png) no-repeat;
 }
 #imessage .session_bubble dd .audio-icon {
   display: inline-block;
   vertical-align: middle;
   width: 16px;
   height: 19px;
-  background: url(./img/voice.png) no-repeat;
+  background: url(../img/voice.png) no-repeat;
 }
 #imessage .session_bubble dd .space {
   display: inline-block;
@@ -413,7 +413,7 @@
   bottom: -7px;
   width: 16px;
   height: 7px;
-  background: url(./img/down-tips.png) no-repeat;
+  background: url(../img/down-tips.png) no-repeat;
   transform: rotate(180deg);
 }
 #imessage .session_form .emoji_content .emoji {

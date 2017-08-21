@@ -1,14 +1,23 @@
 extends ../layout
 block styles
-	//- link(rel='stylesheet', href='/passport/main.css')
+	link(rel='stylesheet', href='/index/css/entry.css')
 block content
-	//- ul.login_userlist
-	//- 	for user in users
-	//- 		li
-	//- 			span #{user.name}
-	//- 			a(href="#") 发起会话
+	.container
+		h1 所有用户（#{users.length}人）
+		if users.length
+			ul.login_userlist
+				for user in users
+					li
+						i
+							img(src="#{user.picture}", width="40", height="40")
+						if user.id == session.user.id
+							span #{user.name}（本人）
+							a(href="/", class="owner") 进入会话
+						else
+							span #{user.name}
+							a(href="/createSession/#{user.id}") 发起会话
 				
 block scripts
-	//- script require(['/index/main'])
+	script require(['/index/js/entry'])
 
 

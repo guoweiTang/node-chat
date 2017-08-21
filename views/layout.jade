@@ -8,6 +8,10 @@ html
 		link(rel='stylesheet', href='/common/static/css/font.css')
 		block styles
 body
+	if session.user
+		input(id="USERID", type="hidden", value="#{session.user.id}")
+		input(id="USERPIC", type="hidden", value="#{session.user.picture}")
+		input(id="USERNAME", type="hidden", value="#{session.user.name}")
 	block content
 
 	script(src="/node_modules/jQuery/dist/jquery.min.js")

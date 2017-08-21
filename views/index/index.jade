@@ -1,4 +1,6 @@
-extends layout
+extends ../layout
+block styles
+	link(rel='stylesheet', href='/index/css/index.css')
 block content
 	#imessage
 		.people_container.fl
@@ -26,6 +28,6 @@ block content
 				span 图片上传中...
 	script(src="/node_modules/jQuery/dist/jquery.min.js")
 	script(src="/common/components/esl/src/esl.js")
-	script require(['/index/main'])
+	script require(['/index/js/index'])
 
 

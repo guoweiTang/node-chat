@@ -37,6 +37,8 @@ define(function(require, exports, module) {
 
     function renderSession(session) {
         var unread_html;
+        var date = new Date(session.updateTime);
+        var dateText = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('/');
         if (!session.unreadCount) {
             unread_html = '<i class="unread_count dn">0</i>';
         } else if (session.unreadCount < 99) {
@@ -45,14 +47,15 @@ define(function(require, exports, module) {
             unread_html = '<i class="unread_count more">99</i>'
         }
 
+
         return ['<dl class="dialog">',
             '    <dt>',
-            '        <img width="38" height="38" src="https://www.lgstatic.com/' + session.icon + '">',
+            '        <img width="38" height="38" src="' + session.sessionIcon + '">',
             unread_html,
             '    </dt>',
             '    <dd>',
-            '        <span class="time">' + session.updateTime + '</span>',
-            '        <h4>' + session.name + '</h4>',
+            '        <span class="time">' + dateText + '</span>',
+            '        <h4>' + session.sessionName + '</h4>',
             session.lastMsg ? '        <p class="msg">' + session.lastMsg.msgContent + '</p>' : '',
             '        <i class="delete-icon" alt="删除">X</i>',
             '    </dd>',
@@ -144,10 +147,9 @@ define(function(require, exports, module) {
     }
 
     function renderMessage(msg) {
-        // var isMyself = msg.senderId == GLOBAL_DOMAIN.userId,
-        var isMyself = msg.senderId == 101,
+        var isMyself = msg.senderId == $('#USERID').val(),
             activeIndex = LGChat.getActiveIndex(),
-            icon = LGChat.getAllSession()[activeIndex].icon;
+            icon = LGChat.getAllSession()[activeIndex].sessionIcon;
         if (msg.msgType === 0) {
             // console.log('开始普通消息')
 
@@ -169,7 +171,7 @@ define(function(require, exports, module) {
         }
         return ['<dl class="session_bubble' + (isMyself ? ' myself' : '') + '">',
             '    <dt>',
-            '        <a target="_blank" href="/user/2.html"> <img width="38" height="38" src="' + (isMyself ? '/static/common/static/img/head38.jpg' : 'https://www.lgstatic.com/' + icon) + '" /> </a>',
+            '        <a target="_blank" href="/user/2.html"> <img width="38" height="38" src="' + (isMyself ? $('#USERPIC').val() : icon) + '" /> </a>',
             '    </dt>',
             '    <dd>',
             '        <span class="arrow"></span>',

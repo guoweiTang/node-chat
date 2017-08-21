@@ -128,7 +128,7 @@ define(function(require, exports, module) {
                 },
                 success: function(data) {
                     var res = data.content.rows;
-                    if (data.state === 1 && res) {
+                    if (data.state === 1) {
                         LGChat.addSessionList(res);
                         //html渲染
                         render.renderAddSession(res);
@@ -199,11 +199,23 @@ define(function(require, exports, module) {
         var content = {
             "sessionId":LGChat.getAllSession()[LGChat.getActiveIndex()].sessionId,
             "msgType":0,
-            "senderId":"4",
-            "msgId": '' + Math.random(),
+            "senderId": $('#USERID').val(),
             "msgContent":msg,
-            "createTime": +new Date()
+            "createTime": new Date()
         }
+
+        $.ajax({
+            url: '/chat-test/sendMsg.json',
+            data: content,
+            success: function(data) {
+                if(data.state != 1){
+                    console.log('消息发送失败')
+                }
+            },
+            error: function(err) {
+                console.log('消息发送失败');
+            }
+        })
 
         //手动推送消息
         console.log(content);
