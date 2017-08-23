@@ -64,7 +64,7 @@ router.get('/chat-test/getSessionList.json', function(req, res, next) {
  * 获取会话详情
  */
 router.get('/chat-test/getMessages.json', function(req, res, next) {
-    var reqSessionId = req.param('sessionId');
+    var reqSessionId = req.params('sessionId');
     messageModel.find({
         sessionId: util.getBothSessionIdRegExp(reqSessionId)
     }, function(err, messages) {

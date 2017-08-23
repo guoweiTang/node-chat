@@ -10,7 +10,13 @@ let userSchema = new mongoose.Schema({
     name: String,
     picture: String
 });
+let sessionSchema = new mongoose.Schema({
+    "sessionId": String,
+    "sessionIcon": String,
+    "sessionName": String
+});
 let userModel = db.model('users', userSchema);
+let sessionModel = db.model('sessions', sessionSchema);
 
 //“我的”页面初始化
 router.route('/profile.html')
@@ -98,6 +104,15 @@ router.route('/account/uploadProfile.json')
             message: 'success'
         })
     })
+    sessionModel.updateMany({
+        "sessionId": RegExp('^\\d+-' + user.id + '$')
+    }, {
+        "sessionIcon": user.picture,
+        "sessionName": user.name
+    }, function(err, session) {
+        if(err)throw err;
+    })
+
 })
 
 module.exports = router;
