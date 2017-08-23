@@ -12,6 +12,21 @@ body
 		input(id="USERID", type="hidden", value="#{session.user.id}")
 		input(id="USERPIC", type="hidden", value="#{session.user.picture}")
 		input(id="USERNAME", type="hidden", value="#{session.user.name}")
+	header.page_header
+		div.login_register
+			if typeof session.user !== 'undefined'
+				a(href="/profile.html") #{session.user.name}
+				a(href="/logout") 退出
+			else
+				a(href="/login.html") 登录
+				a(href="/register.html") 注册
+
+		nav
+			ul.clearfix
+				li
+					a(href="/") 首页
+				li
+					a(href="/profile.html") 我的
 	block content
 
 	script(src="/node_modules/jQuery/dist/jquery.min.js")

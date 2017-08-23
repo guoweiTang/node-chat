@@ -9,23 +9,23 @@ block content
 		.msg_container.fr
 			.no_msg 聊天能拉近感情，快，让我们亲热亲热
 			.had_msg.dn
-			.category_title
-				a
-			.msg_content
-				.main_content
-			.session_form
-				form(novalidate)
-					.emoji_content.dn
-						i.arrow
-					label
-						i.icons.icon-add
-						input(type="file", name="file", class="file_img", accept="image/*")
-					i.icons.icon-emoji
-					#text_area(placeholder="输入文本信息", contenteditable)
-					input(class="submit", type="submit", value="发送")
-			.uploading.dn
-				i.loading-icon
-				span 图片上传中...
+				.category_title
+					a
+				.msg_content
+					.main_content
+				.session_form
+					form(novalidate)
+						.emoji_content.dn
+							i.arrow
+						label
+							i.icons.icon-add
+							input(type="file", name="file", class="file_img", accept="image/*")
+						i.icons.icon-emoji
+						#text_area(placeholder="输入文本信息", contenteditable)
+						input(class="submit", type="submit", value="发送")
+				.uploading.dn
+					i.loading-icon
+					span 图片上传中...
 	script(src="/node_modules/jQuery/dist/jquery.min.js")
 	script(src="/common/components/esl/src/esl.js")
 	script require(['/index/js/index'])

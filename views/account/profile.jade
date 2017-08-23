@@ -1,0 +1,16 @@
+extends ../layout
+block styles
+	link(rel='stylesheet', href='/account/css/profile.css')
+block content
+	.container
+		form#uploadFile(target="uploadIframe", action="/account/uploadPicture.json", method="POST", enctype="multipart/form-data")
+			label.head_pic
+				img#portraitImage(src="#{session.user.picture}", alt="", width="96", height="96")
+				input(type="file", name="headPic")
+		form#profileForm
+			input(type="hidden", name="headPic", value="#{session.user.picture}")
+			input(type="text", name="user", value="#{session.user.name}")
+			input(type="submit", value="保存")
+	iframe(name="uploadIframe", frameborder="0", style="display: none;")
+block scripts
+	script require(['/account/js/profile'])

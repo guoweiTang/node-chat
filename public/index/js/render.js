@@ -37,8 +37,8 @@ define(function(require, exports, module) {
 
     function renderSession(session) {
         var unread_html;
-        var date = new Date(session.updateTime);
-        var dateText = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('/');
+        var now = new Date();
+        var date = new Date(session.lastMsg.createTime);
         if (!session.unreadCount) {
             unread_html = '<i class="unread_count dn">0</i>';
         } else if (session.unreadCount < 99) {
@@ -54,13 +54,30 @@ define(function(require, exports, module) {
             unread_html,
             '    </dt>',
             '    <dd>',
-            '        <span class="time">' + dateText + '</span>',
+            '        <span class="time">' + getDateText(date) + '</span>',
             '        <h4>' + session.sessionName + '</h4>',
             session.lastMsg ? '        <p class="msg">' + session.lastMsg.msgContent + '</p>' : '',
             '        <i class="delete-icon" alt="删除">X</i>',
             '    </dd>',
             '</dl>',
         ].join("");
+    }
+
+    //获取消息时间
+    function getDateText(date) {
+        var firstText = '';
+        var lastText = [date.getHours(), date.getMinutes(), date.getSeconds()].join(':');
+        var now = new Date();
+        now.setHours(0, 0, 0, 0);
+        var _date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        if(now.getTime() == _date.getTime()){
+            return lastText;
+        }else if(now.getTime() == _date.getTime() + 1000*60*60*24){
+            firstText = '1天前';
+        }else{
+            firstText = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('/');
+        }
+        return [firstText, lastText].join(' ');
     }
 
     //更新未读状态
@@ -103,7 +120,7 @@ define(function(require, exports, module) {
         }
 
 
-        $('.category_title a').html(allSession[sessionIndex].name);
+        $('.category_title a').html(allSession[sessionIndex].sessionName);
         $('.people_list .dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
     }
 

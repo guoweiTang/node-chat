@@ -120,11 +120,11 @@ router.route('/login.html')
         }
     })
 })
-
 //登出
 router.get('/logout', function(req, res, next) {
     req.session = null
-    res.redirect(req.get('Referer'));
+    res.redirect('/login.html');
+    // res.redirect(req.get('Referer'));
 })
 
 module.exports = router;

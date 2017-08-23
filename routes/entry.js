@@ -12,7 +12,7 @@ let sessionSchema = new mongoose.Schema({
     "sessionId": String,
     "sessionIcon": String,
     "sessionName": String,
-    "updateTime": Date, 
+    "createTime": Date, 
     "unreadCount": Number, 
     "status": Number, 
     "lastMsg": {
@@ -87,12 +87,11 @@ router.get('/createSession/:id', function(req, res) {
                             "sessionId": sessionId,
                             "sessionIcon": theUser.picture,
                             "sessionName": theUser.name,
-                            "updateTime": now,
+                            "createTime": now,
                             "unreadCount": 0,
                             "status": 0,
                             "lastMsg": message
                         };
-                        console.log(session);
                         //创建会话
                         sessionModel.create(session, function(err, data) {
                             if(err){
@@ -118,7 +117,6 @@ router.get('/createSession/:id', function(req, res) {
                                 throw err;
                                 return;
                             }
-                            console.log('创建对方会话成功');
                         })
                     }
                 })

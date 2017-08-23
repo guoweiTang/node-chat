@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
+var util = require('./util');
 let mongoose = require('mongoose');
 let db = mongoose.createConnection('localhost', 'mychat');
 
 let sessionSchema = new mongoose.Schema({
     "sessionId": String, 
-    "updateTime": Date, 
+    "createTime": Date, 
     "unreadCount": Number, 
     "status": Number, 
     "lastMsg": {
@@ -35,6 +36,11 @@ router.get('/', function(req, res, next) {
         res.redirect('/login.html');
     }
 });
+
+
+/**
+ * 获取会话列表
+ */
 router.get('/chat-test/getSessionList.json', function(req, res, next) {
     var user = req.session.user;
     //主动创建的会话和别人对自己创建的会话都要查出来
@@ -52,11 +58,15 @@ router.get('/chat-test/getSessionList.json', function(req, res, next) {
     })
 
 });
+
+
+/**
+ * 获取会话详情
+ */
 router.get('/chat-test/getMessages.json', function(req, res, next) {
     var reqSessionId = req.param('sessionId');
-    var sessionIdV2 = [reqSessionId.split('-')[1], reqSessionId.split('-')[0]].join('-');
     messageModel.find({
-        sessionId: new RegExp('^(' + reqSessionId + ')\|(' + sessionIdV2 + ')$')
+        sessionId: util.getBothSessionIdRegExp(reqSessionId)
     }, function(err, messages) {
         if(err) throw err;
         res.send({
@@ -86,6 +96,17 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
             "message": "操作成功",
             "state": 1
         });
+    })
+
+    //更新双方会话最后一条消息
+    delete message.sessionId;
+    sessionModel.updateMany({
+        "sessionId": util.getBothSessionIdRegExp(req.param('sessionId'))
+    }, {
+        "lastMsg": message
+    }, function(err, session) {
+        if(err)throw err;
+        console.log(session)
     })
 });
 

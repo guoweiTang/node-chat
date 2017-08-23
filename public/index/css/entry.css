@@ -5,28 +5,28 @@
 h1{
 	text-align: center;
 }
-li img{
+.login_userlist li img{
 	border-radius: 50%;
 	margin-right: 10px;
 }
-li{
+.login_userlist li{
 	line-height: 40px;
 	overflow: inherit;
 	padding: 5px;
 	margin-top: 20px;
 	border-bottom: 1px solid #eee;
 }
-li:after{
+.login_userlist li:after{
 	content: '';
 	display: block;
 }
-li i,
-li span,
-li a{
+.login_userlist li i,
+.login_userlist li span,
+.login_userlist li a{
 	display: inline-block;
 	vertical-align: middle;
 }
-li a{
+.login_userlist li a{
 	margin-top: 5px;
 	line-height: 30px;
 	height: 30px;
@@ -36,13 +36,13 @@ li a{
 	border-radius: 3px;
 	color: #fff;
 }
-li a.owner{
+.login_userlist li a.owner{
 	background-color: #0081b3;
 }
-li a:hover{
+.login_userlist li a:hover{
 	color: #fff;
 	background-color: #00a57f;
 }
-li a.owner:hover{
+.login_userlist li a.owner:hover{
 	background-color: #0069b3;
 }
