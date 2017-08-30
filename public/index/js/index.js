@@ -141,6 +141,7 @@ define(function(require, exports, module) {
     //获取会话详情
     function setMessages(id) {
         LGChat.setMessages(id);
+        askReaded(id);
         var message = LGChat.getMessageBySessionId(id);
         //html渲染
         render.renderAddMessages(id, message);
@@ -159,6 +160,15 @@ define(function(require, exports, module) {
                 if (data.state === 1 && res) {
                     LGChat.addMessages(sessionId, res);
                 }
+            }
+        })
+    }
+
+    function askReaded(sessionId){
+        $.ajax({
+            url: '/chat-test/readed.json',
+            data: {
+                sessionId: sessionId
             }
         })
     }

@@ -59,9 +59,7 @@ function isAbleUploadPic(file){
 }
 
 router.post('/account/uploadPicture.json', function(req, res, next) {
-    console.log(0);
     upload.single('headPic')(req, res, function(err){
-        console.log(1);
         if(err){
             if(err.code === 'LIMIT_FILE_SIZE'){
                 err.message = '上传文件不能超过5MB';

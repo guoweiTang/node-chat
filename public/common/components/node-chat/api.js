@@ -147,15 +147,17 @@ define(function(require, exports, module) {
         var sessionId = msg.sessionId,
             sessionIndex = config.sessionMap(sessionId),
             tempSession = config.sessionList.splice(sessionIndex, 1);
+        var activeIndex = config.activeIndex;
         config.sessionList.unshift(tempSession);
         //更新置顶会话列表
         config.topSessionList.unshift(sessionId);
         //更新活跃会话位置
-        if(config.activeIndex !== -1 && config.activeIndex < sessionIndex) {
-            config.activeIndex ++;
-        }else if(config.activeIndex === sessionIndex){
-            config.activeIndex = 0;
+        if(activeIndex !== -1 && activeIndex < sessionIndex) {
+            activeIndex ++;
+        }else if(activeIndex === sessionIndex){
+            activeIndex = 0;
         }
+        config.activeIndex = activeIndex;
         updateSessionMap();
         config.messages[sessionId] = 0;
         return sessionIndex;
@@ -202,6 +204,7 @@ define(function(require, exports, module) {
                 
                 //更新活跃会话索引
                 if(activeIndex >= 0) {
+                    //当前活跃会话收到消息
                     if(activeIndex === oldIndex) {
                         activeIndex = topIndex;
                     }else if(activeIndex < oldIndex){
@@ -213,6 +216,7 @@ define(function(require, exports, module) {
             }
 
         }
+        config.activeIndex = activeIndex;
         return oldIndex;
     }
     //如果缓存中存在会话详情，更新

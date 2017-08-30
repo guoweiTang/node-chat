@@ -8,7 +8,7 @@ define(function(require, exports, module) {
         var res = JSON.parse($(this).contents().find('pre').html());
         if (res.status === 1) {
             $('#portraitImage').attr('src', res.result.picture);
-            $('#profileForm [name="headPic"').val(res.result.picture);
+            $('#profileForm [name="headPic"]').val(res.result.picture);
         } else {
             alert(res.message);
         }
@@ -31,7 +31,8 @@ define(function(require, exports, module) {
             success: function(res) {
                 if (res.status === 1) {
                     alert('保存成功');
-                    location.reload();
+                    console.log(location.href);
+                    // location.reload();
                 } else {
                     alert(res.message);
                 }

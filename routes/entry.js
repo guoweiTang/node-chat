@@ -39,16 +39,25 @@ let messageModel = db.model('messages', messageSchema);
 /* GET users listing. */
 router.get('/entry.html', function(req, res, next) {
     //已登录
-    if(req.session.user){
+    let user = req.session.user;
+    if(user){
 		//查询用户列表
 		userModel.find({}, function(err, data) {
 			var userList = [];
 			if(err) throw err;
-			if(data.length){
-				userList = data;
-			}
+
+            //本人排序置顶
+            var tempIndex = -1;
+            data.forEach(function(theData, index) {
+                if(theData.id == user.id){
+                    tempIndex = index;
+                }
+            })
+            data.unshift(data.splice(tempIndex, 1)[0]);
+
+            console.log(data)
 			res.render('index/entry', {
-				users: userList
+				users: data
 			})
 		})
     }else{
@@ -111,6 +120,7 @@ router.get('/createSession/:id', function(req, res) {
                         session.sessionId = [sessionId.split('-')[1], sessionId.split('-')[0]].join('-');
                         session.sessionIcon = user.picture;
                         session.sessionName = user.name;
+                        session.unreadCount = 1;
                         //创建会话
                         sessionModel.create(session, function(err, data) {
                             if(err){
