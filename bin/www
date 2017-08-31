@@ -9,6 +9,9 @@ var debug = require('debug')('node-chat:server');
 var http = require('http');
 var sio = require('socket.io');
 
+//所有已建立聊天通信用户的套接字仓库
+var allSockets = {};
+
 /**
  * Get port from environment and store in Express.
  */
@@ -21,11 +24,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-var io = sio.listen(server);
 
-io.sockets.on('connection', function() {
-  console.log('someone is connected');
-})
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -35,24 +34,52 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+var io = sio.listen(server);
+io.sockets.on('connection', function(socket) {
+    console.log('socket.io is connected...');
+
+    //设置套接字
+    socket.on('setUser', function(data) {
+        allSockets[data.id] = socket;
+    })
+    socket.on('message', function(data, fn) {
+        fn(+ new Date());
+
+        let tempSesssionIdArr = data.sessionId.split('-');
+        data.sessionId = tempSesssionIdArr.reverse().join('-')
+        //如果对方在线，把消息推送给对方
+        let othersId = tempSesssionIdArr[0];
+        if(allSockets[othersId]){
+            allSockets[othersId].emit('message', {
+                type: 'IM_SEND_MESSAGE',
+                content: JSON.stringify(data)
+            });
+        }
+    })
+    socket.emit('connect');
+})
+
+
+
+
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+    var port = parseInt(val, 10);
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+    if (port >= 0) {
+        // port number
+        return port;
+    }
 
-  return false;
+    return false;
 }
 
 /**
@@ -60,27 +87,27 @@ function normalizePort(val) {
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+    var bind = typeof port === 'string' ?
+        'Pipe ' + port :
+        'Port ' + port;
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
 }
 
 /**
@@ -88,9 +115,9 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+    var addr = server.address();
+    var bind = typeof addr === 'string' ?
+        'pipe ' + addr :
+        'port ' + addr.port;
+    debug('Listening on ' + bind);
 }

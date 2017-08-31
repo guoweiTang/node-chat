@@ -54,7 +54,7 @@ define(function(require, exports, module) {
             unread_html,
             '    </dt>',
             '    <dd>',
-            '        <span class="time">' + getDateText(date) + '</span>',
+            '        <span class="time">' + getSessionDateText(date) + '</span>',
             '        <h4>' + session.sessionName + '</h4>',
             session.lastMsg ? '        <p class="msg">' + session.lastMsg.msgContent + '</p>' : '',
             '        <i class="delete-icon" alt="删除">X</i>',
@@ -64,9 +64,9 @@ define(function(require, exports, module) {
     }
 
     //获取消息时间
-    function getDateText(date) {
+    function getSessionDateText(date) {
         var firstText = '';
-        var lastText = [date.getHours(), date.getMinutes(), date.getSeconds()].join(':');
+        var lastText = [add0(date.getHours()), add0(date.getMinutes()), add0(date.getSeconds())].join(':');
         var now = new Date();
         now.setHours(0, 0, 0, 0);
         var _date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -99,15 +99,21 @@ define(function(require, exports, module) {
         var html = '',
             activeIndex = LGChat.getActiveIndex(),
             allSession = LGChat.getAllSession(),
-            sessionIndex = LGChat.getIndexBySessionId(sessionId);
+            sessionIndex = LGChat.getIndexBySessionId(sessionId),
+            lastMsg;
         if (list instanceof Array) {
             //滚动条滚至底部
             scrollToBottom('list');
             //更新未读
             renderUnread(sessionId);
 
-            list.forEach(function(item) {
-                html += renderMessage(item);
+            list.forEach(function(item, index) {
+                if(!index){
+                    html += renderMessage(item);
+                }else{
+                    html += renderMessage(item, lastMsg);
+                }
+                lastMsg = item;
             })
 
             $mainMsgContent.html(html);
@@ -115,7 +121,12 @@ define(function(require, exports, module) {
             //滚动条滚至底部
             scrollToBottom('item');
 
-            html = renderMessage(list);
+            var message = LGChat.getMessageBySessionId(sessionId);
+            if(message.length > 1){
+                html = renderMessage(list, message[message.length - 2]);
+            }else{
+                html = renderMessage(list);
+            }
             $mainMsgContent.append(html);
         }
 
@@ -163,7 +174,7 @@ define(function(require, exports, module) {
 
     }
 
-    function renderMessage(msg) {
+    function renderMessage(msg, prevMsg) {
         var isMyself = msg.senderId == $('#USERID').val(),
             activeIndex = LGChat.getActiveIndex(),
             icon = LGChat.getAllSession()[activeIndex].sessionIcon;
@@ -186,7 +197,13 @@ define(function(require, exports, module) {
         } else if (msg.msgType !== 1) {
             // console.log('开始渲染其他类型消息')
         }
-        return ['<dl class="session_bubble' + (isMyself ? ' myself' : '') + '">',
+
+        //时间显示条
+        var theRenderMsgCreateTime = formatMsgDate(msg.createTime, prevMsg ? prevMsg.createTime : '');
+        var msgTimebarHtml = theRenderMsgCreateTime ? '<div class="time_line"><span class="line"></span><span class="time">' + theRenderMsgCreateTime + '</span><span class="line"></span></div>' : '';
+        
+        return [msgTimebarHtml,
+            '<dl class="session_bubble' + (isMyself ? ' myself' : '') + '">',
             '    <dt>',
             '        <a target="_blank" href="/user/2.html"> <img width="38" height="38" src="' + (isMyself ? $('#USERPIC').val() : icon) + '" /> </a>',
             '    </dt>',
@@ -241,6 +258,50 @@ define(function(require, exports, module) {
             }
         }
     });
+
+    /**
+     * [formatMsgDate 格式化显示时间格式]
+     * @param  {[type]} currentDate [当前时间对象字符串]
+     * @param  {[type]} prevDate    [上个时间对象字符串]
+     * @return {[String]}             [时间字符串]
+     */
+    function formatMsgDate(currentDate, prevDate){
+        var current = new Date(currentDate),
+            current_date = current.getDate(),
+            current_year = current.getFullYear(),
+            current_month = current.getMonth() + 1,
+            current_time = current.toString().split(' ')[4],
+            current_date_num_arr = [current_year, add0(current_month), add0(current_date)];
+
+        if(prevDate){
+            var now = new Date(),
+                now_date = now.getDate(),
+                now_year = now.getFullYear(),
+                now_month = now.getMonth() + 1,
+                now_date_num_arr = [now_year, add0(now_month), add0(now_date)];
+
+            var prev = new Date(prevDate),
+                prev_date = prev.getDate(),
+                prev_year = prev.getFullYear(),
+                prev_month = prev.getMonth() + 1,
+                prev_date_num_arr = [prev_year, add0(prev_month), add0(prev_date)];
+
+            //与上条数据时间间隔大于5min、与上条数据不是同一天显示
+            if(current.getTime() - prev.getTime() > 5 * 60 * 1000 || parseInt(current_date_num_arr.join('')) != parseInt(prev_date_num_arr.join(''))){
+                if(parseInt(current_date_num_arr.join('')) == parseInt(now_date_num_arr.join(''))){
+                    return current_time;
+                }else{
+                    return current_date_num_arr.join('-') + ' ' + current_time;
+                }
+            }
+        }else{
+            return current_date_num_arr.join('-') + ' ' + current_time;
+        }
+
+    }
+    function add0(num){
+        return num < 10 ? '0' + num : num;
+    }
     module.exports = {
         'renderAddSession': renderAddSession,
         'renderAddMessages': renderAddMessages,

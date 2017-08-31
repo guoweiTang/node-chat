@@ -6,33 +6,24 @@ define(function(require, exports, module) {
 
     var LGChat = require('/common/components/node-chat/api'),
         render = require('./render');
-    // window.emoji = require('../components/lagou-chat/emoji/emoji.js');
     window.LGChat = LGChat;
     // window.render = render;
 
     //建立连接
-    // LGChat.connect('https://easypush.lagou.com/push', {
-    //     "path": '/push', // (String) 服务器端捕获的名称 (/socket.io)
-    //     "force new connection": true, // (Boolean) 是否强制创建新的连接实例   
-    //     "reconnectionDelay": 2000, // (Number) 重连间隔 (1000)
-    //     "timeout": 10000, // (Number) 超时时间 (20000)
-    //     "query": {
-    //         "uri": window.location.pathname
-    //     } // (Object) 参数
-    // })
+    var socket = LGChat.connect()
     //绑定事件
-    // LGChat.on('connect', function() {
-    //     console.log('connected');
-    // });
-    // LGChat.on('disconnect', function() {
-    //     console.log('disconnect');
-    // });
-    // LGChat.on('reconnect', function() {
-    //     console.log('reconnect');
-    // });
-    // LGChat.on('message', function(msg) {
-    //     console.log(msg);
-    // });
+    LGChat.on('connect', function() {
+        console.log('connected');
+    });
+    LGChat.on('disconnect', function() {
+        console.log('disconnect');
+    });
+    LGChat.on('reconnect', function() {
+        console.log('reconnect');
+    });
+    LGChat.on('message', function(msg) {
+        console.log(msg);
+    });
 
 
     LGChat.on('FE_SESSION_UPDATE', function(msg, oldIndex) {
@@ -62,6 +53,7 @@ define(function(require, exports, module) {
         //更新消息，推送的消息是当前活跃会话，更新消息（html渲染）
         if(newIndex === activeIndex){
             render.renderAddMessages(msg.sessionId, msg);
+            askReaded(msg.sessionId);
         }
     });
     //查询其中一个会话（特别注意：这一块儿要用同步请求获取新的会话内容）
@@ -218,7 +210,11 @@ define(function(require, exports, module) {
             url: '/chat-test/sendMsg.json',
             data: content,
             success: function(data) {
-                if(data.state != 1){
+                if(data.state == 1){
+                    socket.emit('message', data.content, function(dateStr) {
+                        console.log('发送成功：' + dateStr)
+                    });
+                }else{
                     console.log('消息发送失败')
                 }
             },
@@ -228,7 +224,6 @@ define(function(require, exports, module) {
         })
 
         //手动推送消息
-        console.log(content);
         var oldIndex = LGChat.addListAndMessages(content);
         LGChat.trigger('FE_DEFAULT_MESSAGE', content, oldIndex);
 

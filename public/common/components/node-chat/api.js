@@ -2,7 +2,7 @@
 define(function(require, exports, module) {
     "use strict";
     var LGUtils = require('/common/components/util/util'),
-        io = require('/node_modules/socket.io-client/dist/socket.io'),
+        sio = require('/node_modules/socket.io-client/dist/socket.io'),
         emojiUtil = require('./emoji/emoji');
     var config = {
         resourceUrl: 'https://appstatic.lagou.com/resource/imResource/',
@@ -65,10 +65,14 @@ define(function(require, exports, module) {
     }
 
     //连接
-    function connect(socketIOUrl, socketIOConfig) {
-        var socket = io.connect.apply(io, arguments);
-
+    function connect() {
+        var socket = sio.connect();
         socket.on('connect', function() {
+            socket.emit('setUser', {
+                name: $('#USERNAME').val(),
+                picture: $('#USERPIC').val(),
+                id: $('#USERID').val()
+            })
             result.trigger('connect');
 
             socket.on('message', function(data) {

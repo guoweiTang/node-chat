@@ -101,6 +101,7 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
             return;
         }
         res.send({
+            "content": data,
             "message": "操作成功",
             "state": 1
         });
