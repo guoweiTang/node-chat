@@ -7,10 +7,16 @@ define(function(require, exports, module) {
     var LGChat = require('/common/components/node-chat/api'),
         render = require('./render');
     window.LGChat = LGChat;
-    // window.render = render;
 
     //建立连接
-    var socket = LGChat.connect()
+    var socket = LGChat.connect({
+        reconnectionAttempts: 5,
+        query: {
+            name: $('#USERNAME').val(),
+            picture: $('#USERPIC').val(),
+            id: $('#USERID').val()
+        }
+    });
     //绑定事件
     LGChat.on('connect', function() {
         console.log('connected');
@@ -22,23 +28,16 @@ define(function(require, exports, module) {
         console.log('reconnect');
     });
     LGChat.on('message', function(msg) {
+        console.log('原始消息如下↓');
         console.log(msg);
     });
 
 
-    LGChat.on('FE_SESSION_UPDATE', function(msg, oldIndex) {
-        if(typeof oldIndex !== 'undefined'){
-            switch(parseInt(msg.status)){
-                //删除
-                case 0x80:
-                    render.deleteSession(msg.sessionId, oldIndex);
-                    break;
-                //置顶
-                case 0x10:
-                    render.goTopSession(msg.sessionId);
-                    break;
-            }
-        }
+    LGChat.on('FE_SESSION_DEL', function(sessionId, oldIndex) {
+        render.deleteSession(sessionId, oldIndex);
+    })
+    LGChat.on('FE_SESSION_TOP', function(sessionId, oldIndex) {
+        render.goTopSession(sessionId);
     })
     LGChat.on('FE_DEFAULT_MESSAGE', function(msg, oldIndex) {
         var sessionList = LGChat.getAllSession(),
@@ -65,81 +64,37 @@ define(function(require, exports, module) {
             },
             async: false,
             success: function(data) {
-                var res = getTheNewSession();
-                // var res = data.content.rows;
+                var res = data.content;
                 if(data.state === 1 && res){
-                   LGChat.addSessionList(res[0]);
+                   LGChat.addSessionList(res);
+                   // render.renderAddSession(res);
                 }
             }
         })
     });
-    function getTheNewSession() {
-        //查询与张欣会话
-        return {
-            "sessionType": 0,
-            "sessionId": "003",
-            "sessionIdV2": "0-003",
-            "status": 0,
-            "updateTime": "1484399709000",
-            "version": "4",
-            "statusVersion": "1",
-            "unreadCount": 1,
-            "name": "张欣 · 项目经理",
-            "icon": "i/image/M00/6F/6D/Cgp3O1gkJb-AEm1DAABHjz4hdm895.jpeg",
-            "attachment": "{\"cUserId\":300,\"recommend\":false,\"portrait\":\"i/image/M00/6F/6D/Cgp3O1gkJb-AEm1DAABHjz4hdm895.jpeg\",\"nickName\":\"张欣\",\"realName\":\"张欣\",\"resumeStage\":\"\",\"lastPositionName\":\"项目经理\",\"version\":1,\"positionId\":\"2391998\",\"positionName\":\"项目经理\"}",
-            "userRole": "NORMAL",
-            "lastReadMsgId": "97275721094135809",
-            "lastReceivedMsgId": "97275721094135809",
-            "rivalReadMsgId": "0",
-            "firstMsgId": "0",
-            "lastMsg": {
-                "sessionId": "003",
-                "sessionIdV2": "0-003",
-                "senderId": "003",
-                "msgId": "97275721094135809",
-                "msgType": 0,
-                "msgStatus": 0,
-                "msgContent": "Hi，我是张欣，我有5年工作经验，正在国电通网络技术有限公司任职项目经理。 我对您发布的这个职位很感兴趣，期待能进一步沟通。",
-                "createTime": "1484399709000",
-                "expireTime": "0",
-                "platform": 0,
-                "priority": 0
-            },
-            "rivalStatus": 0
-        };
-    }
     addSessionList(1);
+
+
     //获取会话列表
     function addSessionList(page){
-        (function(thePage) {
-            $.ajax({
-                url: '/chat-test/getSessionList.json',
-                data: {
-                    page: thePage,
-                    pageSize: 10
-                },
-                success: function(data) {
-                    var res = data.content.rows;
-                    if (data.state === 1) {
-                        LGChat.addSessionList(res);
-                        //html渲染
-                        render.renderAddSession(res);
-                    }
+        $.ajax({
+            url: '/chat-test/getSessionList.json',
+            data: {
+                page: page
+            },
+            success: function(data) {
+                var sessionList = data.content;
+                if (data.state === 1) {
+                    LGChat.addSessionList(sessionList);
+                    //html渲染
+                    render.renderAddSession(sessionList);
                 }
-            })
-        })(page);
+            }
+        })
     }
 
-    //获取会话详情
-    function setMessages(id) {
-        LGChat.setMessages(id);
-        askReaded(id);
-        var message = LGChat.getMessageBySessionId(id);
-        //html渲染
-        render.renderAddMessages(id, message);
-    }
-    LGChat.on('ADD_NEW_MESSAGE', addMessageBySessionId);
-    function addMessageBySessionId(sessionId){
+    //获取会话详情（首次加载该会话详情会调用）
+    LGChat.on('ADD_NEW_MESSAGE', function(sessionId){
         $.ajax({
             url: '/chat-test/getMessages.json',
             data: {
@@ -148,14 +103,17 @@ define(function(require, exports, module) {
             async: false,
             success: function(data) {
                 // console.log(data);
-                var res = data.content.rows;
-                if (data.state === 1 && res) {
-                    LGChat.addMessages(sessionId, res);
+                var msg = data.content;
+                if (data.state === 1 && msg) {
+                    LGChat.addMessages(sessionId, msg);
+                    //html渲染
+                    render.renderAddMessages(sessionId, msg);
                 }
             }
         })
-    }
+    })
 
+    //标记已读
     function askReaded(sessionId){
         $.ajax({
             url: '/chat-test/readed.json',
@@ -179,19 +137,41 @@ define(function(require, exports, module) {
     /***********************事件绑定***********************/
     //切换会话
     $('.people_list').on('click', '.dialog', function() {
-        var index = $(this).index(),
-            prevActiveIndex = LGChat.getActiveIndex();
-        if(index !== prevActiveIndex){
-            setMessages(LGChat.getAllSession()[index].sessionId);
+
+        var prevActiveIndex = LGChat.getActiveIndex(),
+            sessionId = $(this).data('session-id');
+        if($(this).index() !== prevActiveIndex){
+            LGChat.setMessages(sessionId);
+
+            //标记已读
+            askReaded(sessionId);
         }
         if(!$('.no_msg').hasClass('dn')){
             $('.no_msg').addClass('dn');
             $('.had_msg').removeClass('dn');
-            $('#text_area').focus();
         }
     })
-    $('.people_list').on('click', '.delete-icon', function() {
-        console.log('删除会话')
+    $('.people_list').on('click', '.delete-icon', function(e) {
+        var sessionId = $(this).parents('.dialog').data('session-id');
+        $.ajax({
+            url: '/chat-test/updateSession.json',
+            data: {
+                sessionId: sessionId
+            },
+            success: function(data) {
+                if(data.state == 1){
+                    socket.emit('message', data.content, function(dateStr) {
+                        console.log('UPDATE OK!')
+                    });
+                }else{
+                    console.log('UPDATE ERROR!')
+                }
+            },
+            error: function(err) {
+                console.log('UPDATE ERROR!');
+            }
+        })
+        e.preventDefault();
         return false;
     })
 
@@ -212,14 +192,14 @@ define(function(require, exports, module) {
             success: function(data) {
                 if(data.state == 1){
                     socket.emit('message', data.content, function(dateStr) {
-                        console.log('发送成功：' + dateStr)
+                        console.log('SEND OK!')
                     });
                 }else{
-                    console.log('消息发送失败')
+                    console.log('SEND ERROR!')
                 }
             },
             error: function(err) {
-                console.log('消息发送失败');
+                console.log('SEND ERROR!');
             }
         })
 

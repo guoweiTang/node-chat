@@ -48,7 +48,7 @@ define(function(require, exports, module) {
         }
 
 
-        return ['<dl class="dialog">',
+        return ['<dl class="dialog" data-session-id="' + session.sessionId + '">',
             '    <dt>',
             '        <img width="38" height="38" src="' + session.sessionIcon + '">',
             unread_html,
@@ -303,6 +303,7 @@ define(function(require, exports, module) {
         return num < 10 ? '0' + num : num;
     }
     module.exports = {
+        'deleteSession': deleteSession,
         'renderAddSession': renderAddSession,
         'renderAddMessages': renderAddMessages,
         'renderUnread': renderUnread

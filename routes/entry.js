@@ -14,7 +14,7 @@ let sessionSchema = new mongoose.Schema({
     "sessionName": String,
     "createTime": Date, 
     "unreadCount": Number, 
-    "status": Number, 
+    "status": Number, //status{0:正常状态, 1:已置顶, 2:已删除}
     "lastMsg": {
         "msgType": Number, 
         "senderId": String, 
@@ -55,7 +55,6 @@ router.get('/entry.html', function(req, res, next) {
             })
             data.unshift(data.splice(tempIndex, 1)[0]);
 
-            console.log(data)
 			res.render('index/entry', {
 				users: data
 			})
@@ -77,7 +76,20 @@ router.get('/createSession/:id', function(req, res) {
 			if(err) throw err;
             //存在会话
 			if(data){
-				res.redirect('/');
+                //会话状态为删除
+                if(data.status === 1){
+                    sessionModel.updateOne({
+                        "sessionId": sessionId
+                    }, {
+                        "status": 0
+                    }, function(err, session) {
+                        if(err)throw err;
+                        console.log('被删除会话重置为有效！');
+                        res.redirect('/');
+                    })
+                }else{
+                    res.redirect('/');
+                }
 			}else{
                 userModel.findOne({
                     id: othersId

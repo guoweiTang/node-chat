@@ -10,7 +10,7 @@ let sessionSchema = new mongoose.Schema({
     "unreadCount": Number, 
     "status": Number, 
     "lastMsg": {
-        "msgType": Number, 
+        "msgType": Number, //msgType{0:文本, 1:图文混合, 2:图片, 3:语音}
         "senderId": String, 
         "msgId": String, 
         "msgContent": String, 
@@ -39,28 +39,62 @@ router.get('/', function(req, res, next) {
 
 
 /**
- * 获取会话列表
+ * 获取会话信息
  */
 router.get('/chat-test/getSessionList.json', function(req, res, next) {
-    var user = req.session.user;
-    //主动创建的会话和别人对自己创建的会话都要查出来
-    sessionModel.find({
-        sessionId: new RegExp('^' + user.id + '-\\d+$')
-    }, function(err, sessions) {
-        if(err) throw err;
+    let user = req.session.user;
+    let reqSessionId = req.param('sessionId');
+    
+    //查询单一会话信息
+    if(reqSessionId){
+        sessionModel.findOne({
+            "sessionId": reqSessionId
+        }, function(err, session) {
+            if(err)throw err;
+            if(session.status === 1){
+                sessionModel.updateOne({
+                    "sessionId": reqSessionId
+                }, {
+                    status: 0
+                }, function(err) {
+                    if(err)throw err;
+                    session.status = 0;
+                    res.send({
+                        "content": session,
+                        "message": "操作成功",
+                        "state": 1
+                    })
+                })
+            }else{
+                res.send({
+                    "content": session,
+                    "message": "操作成功",
+                    "state": 1
+                })
+            }
+        })
+    //查询会话列表
+    }else{
+        //主动创建的会话和别人对自己创建的会话都要查出来
+        sessionModel.find({
+            sessionId: new RegExp('^' + user.id + '-\\d+$')
+        }, function(err, sessions) {
+            if(err) throw err;
 
-        //按最新会话时间排序
-        sessions.sort(function(prev, next) {
-            return (new Date(next.lastMsg.createTime)).getTime() - (new Date(prev.lastMsg.createTime)).getTime();
+            //按最新会话时间排序
+            sessions.sort(function(prev, next) {
+                return (new Date(next.lastMsg.createTime)).getTime() - (new Date(prev.lastMsg.createTime)).getTime();
+            })
+            res.send({
+                //过滤已删除会话
+                "content": sessions.filter(function(session){
+                    return session.status != 1;
+                }),
+                "message": "操作成功",
+                "state": 1
+            })
         })
-        res.send({
-            "content": {
-                "rows": sessions
-            },
-            "message": "操作成功",
-            "state": 1
-        })
-    })
+    }
 
 });
 
@@ -75,9 +109,7 @@ router.get('/chat-test/getMessages.json', function(req, res, next) {
     }, function(err, messages) {
         if(err) throw err;
         res.send({
-            "content": {
-                "rows": messages
-            },
+            "content": messages,
             "message": "操作成功",
             "state": 1
         })
@@ -101,7 +133,10 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
             return;
         }
         res.send({
-            "content": data,
+            "content": {
+                type: 'IM_SEND_MESSAGE',
+                content: data
+            },
             "message": "操作成功",
             "state": 1
         });
@@ -142,7 +177,7 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
  * 更新已读状态
  */
 router.get('/chat-test/readed.json', function(req, res, next) {
-    var reqSessionId = req.param('sessionId');
+    let reqSessionId = req.param('sessionId');
     sessionModel.updateOne({
         "sessionId": reqSessionId
     }, {
@@ -150,6 +185,26 @@ router.get('/chat-test/readed.json', function(req, res, next) {
     }, function(err, session) {
         if(err)throw err;
         res.send({
+            "message": "操作成功",
+            "state": 1
+        });
+        console.log('更新已读状态成功');
+    })
+});
+router.get('/chat-test/updateSession.json', function(req, res, next) {
+    let reqSessionId = req.param('sessionId');
+    let status = req.param('status');
+    sessionModel.findOneAndUpdate({
+        "sessionId": reqSessionId
+    }, {
+        "status": 1
+    }, function(err, session) {
+        if(err)throw err;
+        res.send({
+            "content": {
+                type: 'IM_SESSION_UPDATE',
+                content: session
+            },
             "message": "操作成功",
             "state": 1
         });

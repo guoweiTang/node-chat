@@ -23,6 +23,7 @@ define(function(require, exports, module) {
         trigger: triggerEvents,
         connect: connect,
         addSessionList: addSessionList,
+        delSessionById: delSessionById,
         addMessages: addMessages,
         setMessages: setMessages,
         getAllSession: getAllSession,
@@ -66,19 +67,15 @@ define(function(require, exports, module) {
 
     //连接
     function connect() {
-        var socket = sio.connect();
+        var socket = sio.connect.apply(sio, arguments);
         socket.on('connect', function() {
-            socket.emit('setUser', {
-                name: $('#USERNAME').val(),
-                picture: $('#USERPIC').val(),
-                id: $('#USERID').val()
-            })
             result.trigger('connect');
 
             socket.on('message', function(data) {
                 var firstType = data.type,
-                    firstContent = JSON.parse(data.content),
-                    oldIndex;
+                    firstContent = data.content,
+                    oldIndex,
+                    sessionId = firstContent.sessionId;
                 //通用事件
                 result.trigger('message', data);
                 //事件分类处理
@@ -90,18 +87,16 @@ define(function(require, exports, module) {
                         break;
                     //状态改变
                     case 'IM_SESSION_UPDATE':
+                        result.trigger('FE_SESSION_UPDATE', firstContent);
                         //删除
-                        if(parseInt(firstContent.status) === 0x80){
-                            oldIndex = deleteSession(firstContent);
+                        if(parseInt(firstContent.status) === 1){
+                            oldIndex = delSessionById(sessionId);
+                            result.trigger('FE_SESSION_DEL', firstContent, oldIndex);
                         //置顶
-                        }else if(parseInt(firstContent.status) === 0x10){
-                            oldIndex = goTopSession(firstContent);
+                        }else if(parseInt(firstContent.status) === 2){
+                            oldIndex = goTopSessionById(sessionId);
+                            result.trigger('FE_SESSION_TOP', firstContent, oldIndex);
                         }
-                        result.trigger('FE_SESSION_UPDATE', firstContent, oldIndex);
-                        break;
-                    case 'IM_MESSAGE_READ':
-                        break;
-                    case 'IM_UNREAD_MESSAGE_NUM':
                         break;
                     default:
                         result.trigger(firstType);
@@ -120,14 +115,13 @@ define(function(require, exports, module) {
     }
     /******更新会话状态******/
     /**
-     * [deleteSession 删除会话，依次更新：会话列表，会话序列，消息列表]
-     * @param  {[Object]} msg [收到的消息对象内容]
-     * @return {[Number]} sessionIndex [更新前的索引]
+     * [delSessionById 删除会话，依次更新：会话列表，会话序列，消息列表]
+     * @param  {[String]} id [会话id]
+     * @return {[Number]} sessionIndex [原会话索引]
      */
-    function deleteSession(msg){
-        var sessionId = msg.sessionId,
-            sessionIndex = config.sessionMap(sessionId),
-            inTopSessionIndex = config.topSessionList.indexOf(sessionId);
+    function delSessionById(id){
+        var sessionIndex = config.sessionMap[id],
+            inTopSessionIndex = config.topSessionList.indexOf(id);
         config.sessionList.splice(sessionIndex, 1);
         if(inTopSessionIndex > -1){
             config.topSessionList.splice(inTopSessionIndex, 1);
@@ -139,7 +133,7 @@ define(function(require, exports, module) {
             config.activeIndex = -1;
         }
         updateSessionMap();
-        delete config.messages[sessionId];
+        delete config.messages[id];
         return sessionIndex;
     }
     /**
@@ -147,9 +141,8 @@ define(function(require, exports, module) {
      * @param  {[Object]} msg [收到的消息对象内容]
      * @return {[Number]} sessionIndex [更新前的索引]
      */
-    function goTopSession(msg){
-        var sessionId = msg.sessionId,
-            sessionIndex = config.sessionMap(sessionId),
+    function goTopSessionById(sessionId){
+        var sessionIndex = config.sessionMap(sessionId),
             tempSession = config.sessionList.splice(sessionIndex, 1);
         var activeIndex = config.activeIndex;
         config.sessionList.unshift(tempSession);
@@ -163,7 +156,6 @@ define(function(require, exports, module) {
         }
         config.activeIndex = activeIndex;
         updateSessionMap();
-        config.messages[sessionId] = 0;
         return sessionIndex;
     }
 
@@ -269,9 +261,6 @@ define(function(require, exports, module) {
     function parsePictureMessage(msgContent){
         try{
             msgContent = JSON.parse(msgContent);
-            msgContent.thumbUrl = config.resourceUrl + msgContent.key + '?p=' + msgContent.thumbUrl;
-            msgContent.picUrl && (msgContent.picUrl = config.resourceUrl + msgContent.key + '?p=' + msgContent.picUrl);
-            msgContent.hdPicUrl && (msgContent.hdPicUrl = config.resourceUrl + msgContent.key + '?p=' + msgContent.hdPicUrl);
         }catch(err){
             console.log('图片解析出错')
         }
@@ -280,7 +269,6 @@ define(function(require, exports, module) {
     function parseVoiceMessage(msgContent){
         try{
             msgContent = JSON.parse(msgContent);
-            msgContent.voiceUrl = config.resourceUrl + 'mp3/' + msgContent.key + '?p=' + msgContent.voiceUrl;
         }catch(err){
             console.log('语音解析出错')
         }
@@ -288,22 +276,25 @@ define(function(require, exports, module) {
     }
     
     //设置会话列表
-    function addSessionList(arr) {
+    function addSessionList() {
+        var arg = arguments[0];
+        if(!arg)return;
+
         var sessionList,
             topIndex = getTopSessionList().length;
         //如果数据类型为数组添加至列表底部，如果是普通对象提前至“置顶会话”以下
-        if(arr instanceof Array){
-            sessionList = Array.prototype.concat(config.sessionList, arr);
-            config.sessionList = sessionList;
+        if(arg instanceof Array){
+            config.sessionList = Array.prototype.concat(config.sessionList, arg);
 
             //更新序列表&&置顶会话列表
             updateSessionMap(function(theItem, index) {
-                if(theItem.status === '置顶状态'){
+                if(theItem.status === 1){
                     config.topSessionList.push(theItem.sessionId);
                 }
             });
         }else{
-            config.sessionList.splice(topIndex, 0, arr);
+            config.sessionList.splice(topIndex, 0, arg);
+            updateSessionMap();
         }
     }
     //设置会话序列MAP
