@@ -50,7 +50,7 @@ define(function(require, exports, module) {
         render.renderAddSession(sessionList[newIndex]);
 
         //更新消息，推送的消息是当前活跃会话，更新消息（html渲染）
-        if(newIndex === activeIndex){
+        if(newIndex >= 0 && newIndex === activeIndex){
             render.renderAddMessages(msg.sessionId, msg);
             askReaded(msg.sessionId);
         }
@@ -66,7 +66,7 @@ define(function(require, exports, module) {
             success: function(data) {
                 var res = data.content;
                 if(data.state === 1 && res){
-                   LGChat.addSessionList(res);
+                    LGChat.addSessionList(res);
                    // render.renderAddSession(res);
                 }
             }
@@ -137,7 +137,6 @@ define(function(require, exports, module) {
     /***********************事件绑定***********************/
     //切换会话
     $('.people_list').on('click', '.dialog', function() {
-
         var prevActiveIndex = LGChat.getActiveIndex(),
             sessionId = $(this).data('session-id');
         if($(this).index() !== prevActiveIndex){
@@ -156,6 +155,7 @@ define(function(require, exports, module) {
         $.ajax({
             url: '/chat-test/updateSession.json',
             data: {
+                status: 1,
                 sessionId: sessionId
             },
             success: function(data) {
@@ -171,8 +171,6 @@ define(function(require, exports, module) {
                 console.log('UPDATE ERROR!');
             }
         })
-        e.preventDefault();
-        return false;
     })
 
     //发送消息

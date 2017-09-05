@@ -169,15 +169,16 @@ define(function(require, exports, module) {
         //消息格式化
         parseMessage(msg);
         var oldIndex = addSessionByMessage(msg);
-        addMessageToMessages(msg);
+        if(oldIndex >= 0){
+            addMessageToMessages(msg);
+        }
         return oldIndex;
     }
 
     /******更新会话列表******/
     //如果已存在会话，更新会话；不存在，查询更新
     function addSessionByMessage(msg) {
-        var sessionMap = config.sessionMap,
-            oldIndex = sessionMap[msg.sessionId],
+        var oldIndex = config.sessionMap[msg.sessionId],
             tempSession,
             topIndex = config.topSessionList.length,
             activeIndex = config.activeIndex;
@@ -220,6 +221,7 @@ define(function(require, exports, module) {
         var messages = getMessageBySessionId(msg.sessionId),
             sessionIndex = config.sessionMap[msg.sessionId],
             session = config.sessionList[sessionIndex];
+
         //更新未读状态
         if(config.activeIndex === sessionIndex){
             //推送消息为当前活跃会话（标记已读）
@@ -299,6 +301,9 @@ define(function(require, exports, module) {
     }
     //设置会话序列MAP
     function updateSessionMap(cb){
+        if(!config.sessionList.length){
+            config.sessionMap = {};
+        }
         config.sessionList.forEach(function(theItem, index) {
             config.sessionMap[theItem.sessionId] = index;
             typeof cb === 'function' && (cb(theItem, index));
@@ -316,7 +321,7 @@ define(function(require, exports, module) {
         }
     }
     function addMessages(sessionId, arr){
-        if(arr instanceof Array && arr.length){
+        if(arr instanceof Array){
             arr.forEach(function(item) {
                 parseMessage(item);
             })

@@ -43,7 +43,7 @@ router.get('/', function(req, res, next) {
  */
 router.get('/chat-test/getSessionList.json', function(req, res, next) {
     let user = req.session.user;
-    let reqSessionId = req.param('sessionId');
+    let reqSessionId = req.query.sessionId;
     
     //查询单一会话信息
     if(reqSessionId){
@@ -103,7 +103,7 @@ router.get('/chat-test/getSessionList.json', function(req, res, next) {
  * 获取会话详情
  */
 router.get('/chat-test/getMessages.json', function(req, res, next) {
-    var reqSessionId = req.param('sessionId');
+    var reqSessionId = req.query.sessionId;
     messageModel.find({
         sessionId: util.getBothSessionIdRegExp(reqSessionId)
     }, function(err, messages) {
@@ -197,9 +197,10 @@ router.get('/chat-test/updateSession.json', function(req, res, next) {
     sessionModel.findOneAndUpdate({
         "sessionId": reqSessionId
     }, {
-        "status": 1
+        "status": status
     }, function(err, session) {
         if(err)throw err;
+        session.status = status;
         res.send({
             "content": {
                 type: 'IM_SESSION_UPDATE',

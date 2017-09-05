@@ -14,9 +14,9 @@ let sessionSchema = new mongoose.Schema({
     "sessionName": String,
     "createTime": Date, 
     "unreadCount": Number, 
-    "status": Number, //status{0:正常状态, 1:已置顶, 2:已删除}
+    "status": Number, //status{0:正常状态, 1:已删除, 2:已置顶}
     "lastMsg": {
-        "msgType": Number, 
+        "msgType": Number, //msgType{0:文本, 1:图文混合, 2:图片, 3:语音}
         "senderId": String, 
         "msgId": String, 
         "msgContent": String, 
@@ -97,47 +97,27 @@ router.get('/createSession/:id', function(req, res) {
                     if(err) throw err;
                     if(theUser){
                         let now = new Date();
-                        let message = {
-                            "msgType":0,
-                            "senderId": user.id,
-                            "msgId": String(+ new Date()),
-                            "msgContent": "你好",
-                            "createTime": now
-                        };
                         let session = {
                             "sessionId": sessionId,
                             "sessionIcon": theUser.picture,
                             "sessionName": theUser.name,
                             "createTime": now,
                             "unreadCount": 0,
-                            "status": 0,
-                            "lastMsg": message
+                            "status": 0
                         };
-                        //创建会话
+                        //创建本人会话
                         sessionModel.create(session, function(err, data) {
-                            if(err){
-                                throw err;
-                                return;
-                            }
-                            message.sessionId = sessionId;
-                            messageModel.create(message, function(err, data) {
-                                if(err){
-                                    throw err;
-                                    return;
-                                }
-                                res.redirect('/');
-                            })
+                            if(err) throw err;
+                            res.redirect('/');
                         })
 
-                        session.sessionId = [sessionId.split('-')[1], sessionId.split('-')[0]].join('-');
+                        session.sessionId = [othersId, user.id].join('-');
                         session.sessionIcon = user.picture;
                         session.sessionName = user.name;
-                        session.unreadCount = 1;
-                        //创建会话
+                        //创建对方会话
                         sessionModel.create(session, function(err, data) {
                             if(err){
                                 throw err;
-                                return;
                             }
                         })
                     }

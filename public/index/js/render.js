@@ -38,7 +38,8 @@ define(function(require, exports, module) {
     function renderSession(session) {
         var unread_html;
         var now = new Date();
-        var date = new Date(session.lastMsg.createTime);
+        var lastMsg = session.lastMsg;
+        var date = new Date(lastMsg ? lastMsg.createTime : session.createTime);
         if (!session.unreadCount) {
             unread_html = '<i class="unread_count dn">0</i>';
         } else if (session.unreadCount < 99) {
@@ -56,7 +57,7 @@ define(function(require, exports, module) {
             '    <dd>',
             '        <span class="time">' + getSessionDateText(date) + '</span>',
             '        <h4>' + session.sessionName + '</h4>',
-            session.lastMsg ? '        <p class="msg">' + session.lastMsg.msgContent + '</p>' : '',
+            '        <p class="msg">' + (lastMsg ? lastMsg.msgContent : '') + '</p>',
             '        <i class="delete-icon" alt="删除">X</i>',
             '    </dd>',
             '</dl>',
