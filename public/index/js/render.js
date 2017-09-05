@@ -12,7 +12,7 @@ define(function(require, exports, module) {
         //滚动至消息底部的定时器
         scrollBottomTimer = null;
     //更新会话列表
-    function renderAddSession(list) {
+    function renderAddSession(list, oldIndex) {
         var html = '',
             activeIndex = LGChat.getActiveIndex(),
             topIndex = LGChat.getTopSessionList().length;
@@ -22,6 +22,10 @@ define(function(require, exports, module) {
             })
             $('.people_list').append(html);
         } else {
+            //删除原位置会话
+            if(typeof oldIndex !== 'undefined'){
+                $('.people_list .dialog').eq(oldIndex).remove();
+            }
             html = renderSession(list);
             //存在置顶会话
             if (topIndex > 0) {

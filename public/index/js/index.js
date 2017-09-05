@@ -43,15 +43,13 @@ define(function(require, exports, module) {
         var sessionList = LGChat.getAllSession(),
             newIndex = LGChat.getIndexBySessionId(msg.sessionId);
             activeIndex = LGChat.getActiveIndex();
-        //更新会话列表
-        if(typeof oldIndex !== 'undefined'){
-            $('.people_list .dialog').eq(oldIndex).remove();
-        }
-        render.renderAddSession(sessionList[newIndex]);
+        //更新会话（html渲染）
+        render.renderAddSession(sessionList[newIndex], oldIndex);
 
         //更新消息，推送的消息是当前活跃会话，更新消息（html渲染）
         if(newIndex >= 0 && newIndex === activeIndex){
             render.renderAddMessages(msg.sessionId, msg);
+            //标记已读
             askReaded(msg.sessionId);
         }
     });
@@ -67,7 +65,6 @@ define(function(require, exports, module) {
                 var res = data.content;
                 if(data.state === 1 && res){
                     LGChat.addSessionList(res);
-                   // render.renderAddSession(res);
                 }
             }
         })
@@ -106,8 +103,6 @@ define(function(require, exports, module) {
                 var msg = data.content;
                 if (data.state === 1 && msg) {
                     LGChat.addMessages(sessionId, msg);
-                    //html渲染
-                    render.renderAddMessages(sessionId, msg);
                 }
             }
         })
@@ -140,7 +135,11 @@ define(function(require, exports, module) {
         var prevActiveIndex = LGChat.getActiveIndex(),
             sessionId = $(this).data('session-id');
         if($(this).index() !== prevActiveIndex){
-            LGChat.setMessages(sessionId);
+            
+            LGChat.addMessages(sessionId);
+            //html渲染
+            var message = LGChat.getMessageBySessionId(sessionId);
+            render.renderAddMessages(sessionId, message);
 
             //标记已读
             askReaded(sessionId);
@@ -150,8 +149,10 @@ define(function(require, exports, module) {
             $('.had_msg').removeClass('dn');
         }
     })
+    //删除会话
     $('.people_list').on('click', '.delete-icon', function(e) {
         var sessionId = $(this).parents('.dialog').data('session-id');
+        var session = LGChat.getAllSession()[LGChat.getIndexBySessionId(sessionId)];
         $.ajax({
             url: '/chat-test/updateSession.json',
             data: {
@@ -160,9 +161,7 @@ define(function(require, exports, module) {
             },
             success: function(data) {
                 if(data.state == 1){
-                    socket.emit('message', data.content, function(dateStr) {
-                        console.log('UPDATE OK!')
-                    });
+                    console.log('UPDATE OK!')
                 }else{
                     console.log('UPDATE ERROR!')
                 }
@@ -171,6 +170,11 @@ define(function(require, exports, module) {
                 console.log('UPDATE ERROR!');
             }
         })
+        //手动推送消息
+        var oldIndex = LGChat.delSessionById(sessionId);
+        session.status = 1;
+        LGChat.trigger('FE_SESSION_DEL', session, oldIndex);
+        return false;
     })
 
     //发送消息
@@ -215,6 +219,7 @@ define(function(require, exports, module) {
             event.preventDefault();
         };
     });
+
     //加入表情
     $(document).on('click', '.icon-emoji', function() {
         $('.emoji_content').toggleClass('dn')

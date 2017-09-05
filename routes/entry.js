@@ -14,7 +14,7 @@ let sessionSchema = new mongoose.Schema({
     "sessionName": String,
     "createTime": Date, 
     "unreadCount": Number, 
-    "status": Number, //status{0:正常状态, 1:已删除, 2:已置顶}
+    "status": Number, //status{0:正常状态, 1:已删除, 2:已置顶}，注意：三种状态是互斥的
     "lastMsg": {
         "msgType": Number, //msgType{0:文本, 1:图文混合, 2:图片, 3:语音}
         "senderId": String, 

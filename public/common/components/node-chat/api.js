@@ -5,7 +5,6 @@ define(function(require, exports, module) {
         sio = require('/node_modules/socket.io-client/dist/socket.io'),
         emojiUtil = require('./emoji/emoji');
     var config = {
-        resourceUrl: 'https://appstatic.lagou.com/resource/imResource/',
         activeIndex: -1,
         //置顶会话
         topSessionList: [],
@@ -25,7 +24,6 @@ define(function(require, exports, module) {
         addSessionList: addSessionList,
         delSessionById: delSessionById,
         addMessages: addMessages,
-        setMessages: setMessages,
         getAllSession: getAllSession,
         getActiveIndex: getActiveIndex,
         getIndexBySessionId: getIndexBySessionId,
@@ -88,15 +86,15 @@ define(function(require, exports, module) {
                     //状态改变
                     case 'IM_SESSION_UPDATE':
                         result.trigger('FE_SESSION_UPDATE', firstContent);
-                        //删除
-                        if(parseInt(firstContent.status) === 1){
-                            oldIndex = delSessionById(sessionId);
-                            result.trigger('FE_SESSION_DEL', firstContent, oldIndex);
-                        //置顶
-                        }else if(parseInt(firstContent.status) === 2){
-                            oldIndex = goTopSessionById(sessionId);
-                            result.trigger('FE_SESSION_TOP', firstContent, oldIndex);
-                        }
+                        // //删除
+                        // if(parseInt(firstContent.status) === 1){
+                        //     oldIndex = delSessionById(sessionId);
+                        //     result.trigger('FE_SESSION_DEL', firstContent, oldIndex);
+                        // //置顶
+                        // }else if(parseInt(firstContent.status) === 2){
+                        //     oldIndex = goTopSessionById(sessionId);
+                        //     result.trigger('FE_SESSION_TOP', firstContent, oldIndex);
+                        // }
                         break;
                     default:
                         result.trigger(firstType);
@@ -127,7 +125,7 @@ define(function(require, exports, module) {
             config.topSessionList.splice(inTopSessionIndex, 1);
         }
         //更新活跃会话位置
-        if(config.activeIndex !== -1 && config.activeIndex > sessionIndex) {
+        if(config.activeIndex > -1 && config.activeIndex > sessionIndex) {
             config.activeIndex --;
         }else if(config.activeIndex === sessionIndex){
             config.activeIndex = -1;
@@ -168,40 +166,45 @@ define(function(require, exports, module) {
     function addListAndMessages(msg){
         //消息格式化
         parseMessage(msg);
-        var oldIndex = addSessionByMessage(msg);
-        if(oldIndex >= 0){
-            addMessageToMessages(msg);
-        }
+        var oldIndex = addMsgToSessionList(msg);
+        addMsgToMessages(msg);
         return oldIndex;
     }
 
     /******更新会话列表******/
     //如果已存在会话，更新会话；不存在，查询更新
-    function addSessionByMessage(msg) {
+    function addMsgToSessionList(msg) {
         var oldIndex = config.sessionMap[msg.sessionId],
             tempSession,
             topIndex = config.topSessionList.length,
             activeIndex = config.activeIndex;
+        //不存在会话
         if(typeof oldIndex === 'undefined'){
             result.trigger('ADD_NEW_SESSION', msg);
 
-            //更新活跃会话索引
+            //若存在非置顶活跃会话，则更新活跃会话索引
             if(activeIndex >= topIndex) {
                 activeIndex ++;
             }
+        //存在会话
         }else{
-
             tempSession = config.sessionList[oldIndex];
-            tempSession.updateTime = msg.createTime;
             tempSession.lastMsg = msg;
+            //更新未读数
+            if(activeIndex > -1 && activeIndex === oldIndex){
+                tempSession.unreadCount = 0;
+            }else{
+                tempSession.unreadCount ++;
+            }
+
             //非置顶会话需要更新会话位置以及活跃会话索引
-            if(tempSession.status !== '置顶会话'){
+            if(tempSession.status !== 2){
                 tempSession = config.sessionList.splice(oldIndex, 1)[0];
                 config.sessionList.splice(topIndex, 0, tempSession);
                 
                 //更新活跃会话索引
-                if(activeIndex >= 0) {
-                    //当前活跃会话收到消息
+                if(activeIndex > -1) {
+                    //当前会话
                     if(activeIndex === oldIndex) {
                         activeIndex = topIndex;
                     }else if(activeIndex < oldIndex){
@@ -217,21 +220,10 @@ define(function(require, exports, module) {
         return oldIndex;
     }
     //如果缓存中存在会话详情，更新
-    function addMessageToMessages(msg) {
-        var messages = getMessageBySessionId(msg.sessionId),
-            sessionIndex = config.sessionMap[msg.sessionId],
-            session = config.sessionList[sessionIndex];
-
-        //更新未读状态
-        if(config.activeIndex === sessionIndex){
-            //推送消息为当前活跃会话（标记已读）
-            session.unreadCount = 0;
-        }else{
-            //推送消息不为当前活跃会话（未读数加一）
-            session.unreadCount ++;
-        }
-        if(messages){
-            messages.push(msg);
+    function addMsgToMessages(msg) {
+        var message = getMessageBySessionId(msg.sessionId);
+        if(message){
+            message.push(msg);
         }
     }
 
@@ -239,65 +231,73 @@ define(function(require, exports, module) {
     function parseMessage(msg){
         switch(msg.msgType) {
             case 0:
-                msg.msgContent = parseTextMessage(msg.msgContent);
+                msg.msgContent = emojiUtil.getImageByString(msg.msgContent);
                 // console.log('普通消息');
                 break;
             case 1:
-                console.log('图文混合消息');
+                msg.msgContent = '图文混合消息';
                 break;
             case 2:
-                msg.msgContent = parsePictureMessage(msg.msgContent);
+                msg.msgContent = '图片消息';
                 // console.log('图片消息');
                 break;
             case 3:
-                msg.msgContent = parseVoiceMessage(msg.msgContent);
+                msg.msgContent = '音频消息';
                 // console.log('音频消息');
                 break;
             default:
-                console.log('未知消息类型');
+                msg.msgContent = '未知消息类型';
         }
     }
-    function parseTextMessage(msgContent){
-        return emojiUtil.getImageByString(msgContent);
-    }
-    function parsePictureMessage(msgContent){
-        try{
-            msgContent = JSON.parse(msgContent);
-        }catch(err){
-            console.log('图片解析出错')
-        }
-        return msgContent;
-    }
-    function parseVoiceMessage(msgContent){
-        try{
-            msgContent = JSON.parse(msgContent);
-        }catch(err){
-            console.log('语音解析出错')
-        }
-        return msgContent;
-    }
-    
-    //设置会话列表
-    function addSessionList() {
-        var arg = arguments[0];
-        if(!arg)return;
+    /**
+     * 设置会话列表（更新会话）
+     * @param {[Array|Object]} session [会话数组|单个会话]
+     */
+    function addSessionList(session) {
 
         var sessionList,
             topIndex = getTopSessionList().length;
-        //如果数据类型为数组添加至列表底部，如果是普通对象提前至“置顶会话”以下
-        if(arg instanceof Array){
-            config.sessionList = Array.prototype.concat(config.sessionList, arg);
+        //如果数据类型为数组添加至列表底部，如果是普通对象前置“置顶会话”以下
+        if(session instanceof Array){
+            config.sessionList = Array.prototype.concat(config.sessionList, session);
 
             //更新序列表&&置顶会话列表
             updateSessionMap(function(theItem, index) {
-                if(theItem.status === 1){
+                //status{0:正常状态, 1:已删除, 2:已置顶}
+                if(theItem.status === 2){
                     config.topSessionList.push(theItem.sessionId);
                 }
             });
         }else{
-            config.sessionList.splice(topIndex, 0, arg);
+            config.sessionList.splice(topIndex, 0, session);
             updateSessionMap();
         }
+    }
+
+    /**
+     * 设置消息详情（缓存数据中）
+     * @param {[String]} sessionId [会话id]
+     * @param {[Array]} arr       [消息数组（可选）]
+     */
+    function addMessages(sessionId, arr){
+        var message = result.getMessageBySessionId(sessionId);
+
+        //存在要增加的消息数据
+        if(arr instanceof Array){
+            arr.forEach(function(item) {
+                parseMessage(item);
+            })
+            config.messages[sessionId] = arr;
+        //缓存数据中不存在该会话的消息并且没有要增加进来的数据，则查询后设置
+        }else if(!message){
+            result.trigger('ADD_NEW_MESSAGE', sessionId);
+            return;
+        }
+        //更新活跃会话索引
+        config.activeIndex = getIndexBySessionId(sessionId);
+        
+        //更新未读数
+        config.sessionList[config.activeIndex].unreadCount = 0;
     }
     //设置会话序列MAP
     function updateSessionMap(cb){
@@ -310,28 +310,6 @@ define(function(require, exports, module) {
         })
     }
 
-    //设置消息详情（缓存数据中）
-    function setMessages(sessionId) {
-        var message = result.getMessageBySessionId(sessionId);
-        //缓存数据中不存在该会话的消息，则查询后设置
-        if(message){
-            addMessages(sessionId);
-        }else{
-            result.trigger('ADD_NEW_MESSAGE', sessionId);
-        }
-    }
-    function addMessages(sessionId, arr){
-        if(arr instanceof Array){
-            arr.forEach(function(item) {
-                parseMessage(item);
-            })
-            config.messages[sessionId] = arr;
-        }
-        config.activeIndex = getIndexBySessionId(sessionId);
-        
-        //更新未读状态
-        config.sessionList[config.activeIndex].unreadCount = 0;
-    }
 
     return result;
 })

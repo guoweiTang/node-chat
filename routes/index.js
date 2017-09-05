@@ -152,7 +152,7 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
         "lastMsg": message
     }, function(err, session) {
         if(err)throw err;
-        console.log('更新发送方会话最后一条消息成功！');
+        console.log('update my session OK!');
     })
     //更新对方会话
     let sessionIdArr = req.param('sessionId').split('-');
@@ -168,7 +168,7 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
             "unreadCount": (session.unreadCount || 0) + 1
         }, function(err, session) {
             if(err)throw err;
-            console.log('更新对方最后一条消息成功');
+            console.log('update other session is OK!');
         })
     })
 
@@ -209,7 +209,6 @@ router.get('/chat-test/updateSession.json', function(req, res, next) {
             "message": "操作成功",
             "state": 1
         });
-        console.log('更新已读状态成功');
     })
 });
 
