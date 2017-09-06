@@ -24,12 +24,12 @@ define(function(require, exports, module) {
         addSessionList: addSessionList,
         delSessionById: delSessionById,
         addMessages: addMessages,
+        addListAndMessages: addListAndMessages,
         getAllSession: getAllSession,
         getActiveIndex: getActiveIndex,
         getIndexBySessionId: getIndexBySessionId,
         getMessageBySessionId: getMessageBySessionId,
-        getTopSessionList: getTopSessionList,
-        addListAndMessages: addListAndMessages
+        getTopSessionList: getTopSessionList
     };
     /******获取数据******/
     function getAllSession() {
