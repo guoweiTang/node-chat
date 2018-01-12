@@ -4,74 +4,39 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('node-chat:server');
-var http = require('http');
-var sio = require('socket.io');
-
-//所有已建立聊天通信用户的套接字仓库
-var allSockets = {};
+const app = require('../app');
+// const debug = require('debug')('node-chat:server');
+const http = require('http');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT);
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
-
+const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, '127.0.0.1');
 server.on('error', onError);
 server.on('listening', onListening);
 
-var io = sio.listen(server);
-io.sockets.on('connection', function(socket) {
-
-    //设置套接字(包括登录用户信息)
-    var connectionQuery = socket.handshake.query;
-    if(!connectionQuery)return;
-
-    allSockets[connectionQuery.id] = socket;
-
-    socket.on('message', function(data, fn) {
-        fn(+ new Date());
-
-        let theSessionId = data.content.sessionId;
-        //发送普通聊天消息
-        if(data.type === 'IM_SEND_MESSAGE'){
-            let tempSesssionIdArr = theSessionId.split('-');
-            data.content.sessionId = tempSesssionIdArr.reverse().join('-')
-            //如果对方在线，把消息推送给对方
-            let othersId = tempSesssionIdArr[0];
-            if(allSockets[othersId]){
-                allSockets[othersId].emit('message', data);
-            }
-        //状态消息
-        }else if(data.type === 'IM_SESSION_UPDATE'){
-            socket.emit('message', data);
-        }
-    })
-    socket.emit('connect');
-})
-
-
-
+// 监听sokect连接
+require('../lib/socket-connect')(server);
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
+function normalizePort(val = '3000') {
     var port = parseInt(val, 10);
 
     if (isNaN(port)) {
@@ -124,5 +89,7 @@ function onListening() {
     var bind = typeof addr === 'string' ?
         'pipe ' + addr :
         'port ' + addr.port;
-    debug('Listening on ' + bind);
+    // debug('Listening on ' + bind);
+    const address = server.address();
+    console.log('......\n> Listening on http://' + address.address + ':' + address.port);
 }

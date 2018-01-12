@@ -1,43 +1,14 @@
 var express = require('express');
 var router = express.Router();
-let mongoose = require('mongoose');
-let db = mongoose.createConnection('localhost', 'mychat');
 
-let userSchema = new mongoose.Schema({
-	id: String,
-	name: String,
-	picture: String
-});
-let sessionSchema = new mongoose.Schema({
-    "sessionId": String,
-    "sessionIcon": String,
-    "sessionName": String,
-    "createTime": Date, 
-    "unreadCount": Number, 
-    "status": Number, //status{0:正常状态, 1:已删除, 2:已置顶}，注意：三种状态是互斥的
-    "lastMsg": {
-        "msgType": Number, //msgType{0:文本, 1:图文混合, 2:图片, 3:语音}
-        "senderId": String, 
-        "msgId": String, 
-        "msgContent": String, 
-        "createTime": Date
-    }
-});
-let messageSchema = new mongoose.Schema({
-    "sessionId": String,
-    "msgType": Number, 
-    "senderId": String, 
-    "msgId": String, 
-    "msgContent": String, 
-    "createTime": String
-});
+const model = require('../db-model');
 
-let userModel = db.model('users', userSchema);
-let sessionModel = db.model('sessions', sessionSchema);
-let messageModel = db.model('messages', messageSchema);
+let userModel = model.userModel;
+let sessionModel = model.sessionModel;
+let messageModel = model.messageModel;
 
 /* GET users listing. */
-router.get('/entry.html', function(req, res, next) {
+router.get('/', function(req, res, next) {
     //已登录
     let user = req.session.user;
     if(user){
@@ -60,7 +31,7 @@ router.get('/entry.html', function(req, res, next) {
 			})
 		})
     }else{
-        res.redirect('/login.html');
+        res.redirect('/auth/login.html');
     }
 });
 
@@ -127,7 +98,7 @@ router.get('/createSession/:id', function(req, res) {
 			
 		})
     }else{
-        res.redirect('/login.html');
+        res.redirect('/auth/login.html');
     }
 })
 

@@ -16,10 +16,10 @@ body
 		div.login_register
 			if typeof session.user !== 'undefined'
 				a(href="/profile.html") #{session.user.name}
-				a(href="/logout") 退出
+				a(href="/auth/logout") 退出
 			else
-				a(href="/login.html") 登录
-				a(href="/register.html") 注册
+				a(href="/auth/login.html") 登录
+				a(href="/auth/register.html") 注册
 
 		nav
 			ul.clearfix

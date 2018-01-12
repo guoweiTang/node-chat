@@ -1,16 +1,10 @@
-let express = require('express');
-let router = express.Router();
-let fs = require('fs');
-let util = require('./util');
-let mongoose = require('mongoose');
-let db = mongoose.createConnection('localhost', 'mychat');
-let userSchema = new mongoose.Schema({
-    id: String,
-    name: String,
-    password: String,
-    picture: String
-});
-let userModel = db.model('users', userSchema);
+const express = require('express');
+const router = express.Router();
+const util = require('./util');
+const model = require('../db-model');
+
+let userModel = model.userModel;
+
 //注册
 router.route('/register.html')
 .get(function(req, res, next){
@@ -44,7 +38,6 @@ router.route('/register.html')
             throw err;
             return;
         }
-        console.log(baseUser);
         if(!!baseUser){
             res.send({
                 status: -1,
@@ -123,7 +116,7 @@ router.route('/login.html')
 //登出
 router.get('/logout', function(req, res, next) {
     req.session = null
-    res.redirect('/login.html');
+    res.redirect('/auth/login.html');
     // res.redirect(req.get('Referer'));
 })
 

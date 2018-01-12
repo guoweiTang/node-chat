@@ -1,22 +1,13 @@
 let express = require('express');
 let router = express.Router();
 let util = require('./util');
-//专为form表单上传文件而生（https://github.com/expressjs/multer）
+//专为form表单上传文件而生
 let multer  = require('multer');
-let mongoose = require('mongoose');
-let db = mongoose.createConnection('localhost', 'mychat');
-let userSchema = new mongoose.Schema({
-    id: String,
-    name: String,
-    picture: String
-});
-let sessionSchema = new mongoose.Schema({
-    "sessionId": String,
-    "sessionIcon": String,
-    "sessionName": String
-});
-let userModel = db.model('users', userSchema);
-let sessionModel = db.model('sessions', sessionSchema);
+const model = require('../db-model');
+
+let userModel = model.userModel;
+let sessionModel = model.sessionModel;
+
 
 //“我的”页面初始化
 router.route('/profile.html')
@@ -25,7 +16,7 @@ router.route('/profile.html')
     if(req.session.user){
         res.render('account/profile');
     }else{
-        res.redirect('/login.html');
+        res.redirect('/auth/login.html');
     }
 })
 
