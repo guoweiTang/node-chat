@@ -1,12 +1,9 @@
-let express = require('express');
-let router = express.Router();
-let util = require('./util');
+const express = require('express');
 //专为form表单上传文件而生
-let multer  = require('multer');
-const model = require('../db-model');
-
-let userModel = model.userModel;
-let sessionModel = model.sessionModel;
+const multer  = require('multer');
+let router = express.Router();
+let util = require('../lib/util');
+let {sessionModel, userModel} = require('../db-model');
 
 
 //“我的”页面初始化

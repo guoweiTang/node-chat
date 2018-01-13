@@ -1,11 +1,25 @@
 /**
- * mongoose models
+ * db models
  */
-const userModel = require('./user');
-const messageModel = require('./message');
-const sessionModel = require('./session');
+
+const mongoose = require('mongoose');
+
+require('./user');
+require('./session');
+require('./message');
+
+let db = mongoose.createConnection('localhost', 'mychat');
+db.on('error', function(err) {
+  throw err;
+});
+
+let userModel = db.model('users');
+let sessionModel = db.model('sessions');
+let messageModel = db.model('messages');
+
 module.exports = {
-    userModel: userModel,
-    messageModel: messageModel,
-    sessionModel: sessionModel
-}
+  sourceDb: db,
+  userModel,
+  sessionModel,
+  messageModel
+};

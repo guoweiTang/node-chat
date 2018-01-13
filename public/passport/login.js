@@ -5,7 +5,7 @@
 define(function(require, exports, module) {
     $('form').on('submit', function() {
         $.ajax({
-            url: '/login.html',
+            url: '/auth/login.json',
             type: 'POST',
             data: {
                 user: $('[name="user"]').val(),

@@ -6,16 +6,12 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 //基于cookie-parser的会话设置（https://github.com/expressjs/cookie-session）
 const cookieSession = require('cookie-session');
-const mongoose = require('mongoose');
 const routes = require('./routes');
 
 /**
  * 连接数据库
  */
-const db = mongoose.createConnection('localhost', 'mychat');
-db.on('error', function(err) {
-  throw err;
-});
+require('./db-model');
 
 const app = express();
 
@@ -35,7 +31,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
-  keys: ['key1', 'key2']
+  keys: ['ice', 'tang']
 }))
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -48,7 +44,6 @@ app.use(function(req, res, next){
 
 // 注册业务路由器
 app.use(routes);
-
 
 
 /**

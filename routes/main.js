@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const util = require('./util');
-const model = require('../db-model');
-
-let sessionModel = model.sessionModel;
-let messageModel = model.messageModel;
+const util = require('../lib/util');
+const config = require('../lib/config');
+const {sessionModel, messageModel} = require('../db-model');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -12,15 +10,14 @@ router.get('/', function(req, res, next) {
     if(req.session.user){
         res.render('index/index');
     }else{
-        res.redirect('/auth/login.html');
+        res.redirect(config.pathPrefix.auth + '/login.html');
     }
 });
-
 
 /**
  * 获取会话信息
  */
-router.get('/chat-test/getSessionList.json', function(req, res, next) {
+router.get('/getSessionList.json', function(req, res, next) {
     let user = req.session.user;
     let reqSessionId = req.query.sessionId;
     
@@ -81,7 +78,7 @@ router.get('/chat-test/getSessionList.json', function(req, res, next) {
 /**
  * 获取会话详情
  */
-router.get('/chat-test/getMessages.json', function(req, res, next) {
+router.get('/getMessages.json', function(req, res, next) {
     var reqSessionId = req.query.sessionId;
     messageModel.find({
         sessionId: util.getBothSessionIdRegExp(reqSessionId)
@@ -97,7 +94,7 @@ router.get('/chat-test/getMessages.json', function(req, res, next) {
 /**
  * 发送消息
  */
-router.get('/chat-test/sendMsg.json', function(req, res, next) {
+router.get('/sendMsg.json', function(req, res, next) {
     var message = {
         "sessionId": req.param('sessionId'),
         "msgType": req.param('msgType'), 
@@ -131,7 +128,7 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
         "lastMsg": message
     }, function(err, session) {
         if(err)throw err;
-        console.log('update my session OK!');
+        // console.log('update my session OK!');
     })
     //更新对方会话
     let sessionIdArr = req.param('sessionId').split('-');
@@ -147,7 +144,7 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
             "unreadCount": (session.unreadCount || 0) + 1
         }, function(err, session) {
             if(err)throw err;
-            console.log('update other session is OK!');
+            // console.log('update other session is OK!');
         })
     })
 
@@ -155,7 +152,7 @@ router.get('/chat-test/sendMsg.json', function(req, res, next) {
 /**
  * 更新已读状态
  */
-router.get('/chat-test/readed.json', function(req, res, next) {
+router.get('/readed.json', function(req, res, next) {
     let reqSessionId = req.param('sessionId');
     sessionModel.updateOne({
         "sessionId": reqSessionId
@@ -167,10 +164,10 @@ router.get('/chat-test/readed.json', function(req, res, next) {
             "message": "操作成功",
             "state": 1
         });
-        console.log('更新已读状态成功');
+        // console.log('更新已读状态成功');
     })
 });
-router.get('/chat-test/updateSession.json', function(req, res, next) {
+router.get('/updateSession.json', function(req, res, next) {
     let reqSessionId = req.param('sessionId');
     let status = req.param('status');
     sessionModel.findOneAndUpdate({

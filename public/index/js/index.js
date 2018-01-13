@@ -56,7 +56,7 @@ define(function(require, exports, module) {
     //查询其中一个会话（特别注意：这一块儿要用同步请求获取新的会话内容）
     LGChat.on('ADD_NEW_SESSION', function(msg) {
         $.ajax({
-            url: '/chat-test/getSessionList.json',
+            url: '/chat/getSessionList.json',
             data: {
                 sessionId: msg.sessionId
             },
@@ -75,7 +75,7 @@ define(function(require, exports, module) {
     //获取会话列表
     function addSessionList(page){
         $.ajax({
-            url: '/chat-test/getSessionList.json',
+            url: '/chat/getSessionList.json',
             data: {
                 page: page
             },
@@ -93,7 +93,7 @@ define(function(require, exports, module) {
     //获取会话详情（首次加载该会话详情会调用）
     LGChat.on('ADD_NEW_MESSAGE', function(sessionId){
         $.ajax({
-            url: '/chat-test/getMessages.json',
+            url: '/chat/getMessages.json',
             data: {
                 sessionId: sessionId
             },
@@ -111,7 +111,7 @@ define(function(require, exports, module) {
     //标记已读
     function askReaded(sessionId){
         $.ajax({
-            url: '/chat-test/readed.json',
+            url: '/chat/readed.json',
             data: {
                 sessionId: sessionId
             }
@@ -154,7 +154,7 @@ define(function(require, exports, module) {
         var sessionId = $(this).parents('.dialog').data('session-id');
         var session = LGChat.getAllSession()[LGChat.getIndexBySessionId(sessionId)];
         $.ajax({
-            url: '/chat-test/updateSession.json',
+            url: '/chat/updateSession.json',
             data: {
                 status: 1,
                 sessionId: sessionId
@@ -189,7 +189,7 @@ define(function(require, exports, module) {
         }
 
         $.ajax({
-            url: '/chat-test/sendMsg.json',
+            url: '/chat/sendMsg.json',
             data: content,
             success: function(data) {
                 if(data.state == 1){

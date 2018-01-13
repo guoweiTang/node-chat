@@ -1,11 +1,6 @@
-var express = require('express');
-var router = express.Router();
-
-const model = require('../db-model');
-
-let userModel = model.userModel;
-let sessionModel = model.sessionModel;
-let messageModel = model.messageModel;
+const express = require('express');
+let router = express.Router();
+let {sessionModel, messageModel, userModel} = require('../db-model');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

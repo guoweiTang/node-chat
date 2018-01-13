@@ -1,16 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const util = require('./util');
-const model = require('../db-model');
-
-let userModel = model.userModel;
+const util = require('../lib/util');
+const config = require('../lib/config');
+const {userModel} = require('../db-model');
 
 //注册
-router.route('/register.html')
-.get(function(req, res, next){
+router.get('/register.html', function(req, res, next){
     res.render('passport/register');
-})
-.post(function(req, res, next){
+});
+router.post('/register.json', function(req, res, next){
     res.set('Content-Type', 'text/html');
     let body = req.body;
     let message;
@@ -23,7 +21,6 @@ router.route('/register.html')
         }
     }
     if(message){
-
         res.send({
             status: -1,
             message: message
@@ -47,8 +44,7 @@ router.route('/register.html')
             let userSource = {
                 id: util.createFactoryId(),
                 name: body.user,
-                password: body.password,
-                picture: util.config.defaultPic
+                password: body.password
             };
             userModel.create(userSource, function(err, data) {
                 if(err){
@@ -60,7 +56,7 @@ router.route('/register.html')
                     status: 1,
                     message: 'success',
                     result: {
-                        url: '/entry.html'
+                        url: config.pathPrefix.index + '/entry.html'
                     }
                 })
             })
@@ -69,16 +65,15 @@ router.route('/register.html')
 })
 
 //登录
-router.route('/login.html')
-.get(function(req, res, next){
+router.get('/login.html', function(req, res, next){
     //已登录
     if(req.session.user){
-        res.redirect('/entry.html');
+        res.redirect(config.pathPrefix.index + '/entry.html');
     }else{
         res.render('passport/login');
     }
 })
-.post(function(req, res, next){
+router.post('/login.json', function(req, res, next){
     res.set('Content-Type', 'text/html');
     let body = req.body;
     let message;
@@ -107,7 +102,7 @@ router.route('/login.html')
                 status: 1,
                 message: 'success',
                 result: {
-                    url: '/entry.html'
+                    url: config.pathPrefix.index + '/entry.html'
                 }
             })
         }
@@ -115,8 +110,8 @@ router.route('/login.html')
 })
 //登出
 router.get('/logout', function(req, res, next) {
-    req.session = null
-    res.redirect('/auth/login.html');
+    req.session = null;
+    res.redirect(config.pathPrefix.auth + '/login.html');
     // res.redirect(req.get('Referer'));
 })
 
