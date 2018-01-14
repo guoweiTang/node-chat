@@ -5,6 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "env": {
+                "PORT": "3000",
+                "NODE_ENV": "development"
+            },
             "type": "node",
             "request": "launch",
             "name": "run start",
