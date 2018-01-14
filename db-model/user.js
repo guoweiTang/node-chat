@@ -6,11 +6,12 @@ const mongoose = require('mongoose');
 let userSchema = new mongoose.Schema({
     id: {
         type: String,
-        rquired: true,
+        unique: true,
         index: true
     },
     name: {
         type: String,
+        unique: true,
         rquired: true
     },
     password: {
@@ -18,7 +19,8 @@ let userSchema = new mongoose.Schema({
         rquired: true
     },
     picture: {
-        type: String
+        type: String,
+        default: '/upload-sources/i/default-head.jpg'
     }
 });
 let userModel = mongoose.model('users', userSchema);

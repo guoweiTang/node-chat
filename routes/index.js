@@ -12,7 +12,7 @@ const account = require('./account');
 let router = express.Router();
 router.use(config.pathPrefix.auth, passport);
 router.use('/account', account);
-router.use('/chat', main);
+router.use(config.pathPrefix.chat, main);
 router.use(config.pathPrefix.index, entry);
 router.use('/', function(req, res, next){
     res.redirect(301, config.pathPrefix.index);

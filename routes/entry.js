@@ -1,4 +1,5 @@
 const express = require('express');
+const config = require('../lib/config');
 let router = express.Router();
 let {sessionModel, messageModel, userModel} = require('../db-model');
 
@@ -9,13 +10,13 @@ router.get('/', function(req, res, next) {
     if(user){
 		//查询用户列表
 		userModel.find({}, function(err, data) {
-			var userList = [];
 			if(err) throw err;
 
             //本人排序置顶
-            var tempIndex = -1;
+            let tempIndex = -1;
+
             data.forEach(function(theData, index) {
-                if(theData.id == user.id){
+                if(theData.id === user.id){
                     tempIndex = index;
                 }
             })
@@ -26,7 +27,7 @@ router.get('/', function(req, res, next) {
 			})
 		})
     }else{
-        res.redirect('/auth/login.html');
+        res.redirect(config.pathPrefix.auth + '/login.html');
     }
 });
 
@@ -50,11 +51,11 @@ router.get('/createSession/:id', function(req, res) {
                         "status": 0
                     }, function(err, session) {
                         if(err)throw err;
-                        console.log('被删除会话重置为有效！');
-                        res.redirect('/');
+                        // console.log('被删除会话重置为有效！');
+                        res.redirect(config.pathPrefix.chat);
                     })
                 }else{
-                    res.redirect('/');
+                    res.redirect(config.pathPrefix.chat);
                 }
 			}else{
                 userModel.findOne({
@@ -63,25 +64,26 @@ router.get('/createSession/:id', function(req, res) {
                     if(err) throw err;
                     if(theUser){
                         let now = new Date();
-                        let session = {
+                        let mySession = {
                             "sessionId": sessionId,
                             "sessionIcon": theUser.picture,
                             "sessionName": theUser.name,
-                            "createTime": now,
-                            "unreadCount": 0,
-                            "status": 0
+                            "createTime": now
+                        };
+                        let othersSession = {
+                            "sessionId": [othersId, user.id].join('-'),
+                            "sessionIcon": user.picture,
+                            "sessionName": user.name,
+                            "createTime": now
                         };
                         //创建本人会话
-                        sessionModel.create(session, function(err, data) {
+                        sessionModel.create(mySession, function(err, data) {
                             if(err) throw err;
-                            res.redirect('/');
+                            res.redirect(config.pathPrefix.chat);
                         })
 
-                        session.sessionId = [othersId, user.id].join('-');
-                        session.sessionIcon = user.picture;
-                        session.sessionName = user.name;
                         //创建对方会话
-                        sessionModel.create(session, function(err, data) {
+                        sessionModel.create(othersSession, function(err, data) {
                             if(err){
                                 throw err;
                             }
@@ -93,7 +95,7 @@ router.get('/createSession/:id', function(req, res) {
 			
 		})
     }else{
-        res.redirect('/auth/login.html');
+        res.redirect(config.pathPrefix.auth + '/login.html');
     }
 })
 

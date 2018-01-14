@@ -40,6 +40,13 @@
 #imessage .people_container .people_list {
   height: 597px;
 }
+.people_list .no_msg{
+  margin: 40px 0;
+  text-align: center;
+}
+.people_list .no_msg a{
+  color: #00b38a;
+}
 #imessage .people_container dl {
   border-bottom: 1px dashed #dce0e0;
   padding: 14px;

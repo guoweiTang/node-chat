@@ -21,7 +21,7 @@ router.get('/getSessionList.json', function(req, res, next) {
     let user = req.session.user;
     let reqSessionId = req.query.sessionId;
     
-    //查询单一会话信息
+    //　查询单一会话状态（更新删除状态为正常状态）
     if(reqSessionId){
         sessionModel.findOne({
             "sessionId": reqSessionId

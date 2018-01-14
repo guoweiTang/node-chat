@@ -51,7 +51,7 @@ router.post('/register.json', function(req, res, next){
                     throw err;
                     return;
                 }
-                req.session.user = userSource;
+                req.session.user = data;
                 res.send({
                     status: 1,
                     message: 'success',
@@ -83,6 +83,7 @@ router.post('/login.json', function(req, res, next){
             status: -1,
             message: '表单不能为空'
         })
+        return;
     }
     userModel.findOne({
         name: body.user,

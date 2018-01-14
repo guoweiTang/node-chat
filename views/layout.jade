@@ -15,7 +15,7 @@ body
 	header.page_header
 		div.login_register
 			if typeof session.user !== 'undefined'
-				a(href="/profile.html") #{session.user.name}
+				a(href="/account/profile.html") #{session.user.name}
 				a(href="/auth/logout") 退出
 			else
 				a(href="/auth/login.html") 登录
@@ -26,9 +26,9 @@ body
 				li
 					a(href="/") 首页
 				li
-					a(href="/profile.html") 我的
+					a(href="/account/profile.html") 我的
 				li
-					a(href="/entry.html") 用户列表
+					a(href="/chatPeopleList/entry.html") 用户列表
 	block content
 
 	script(src="/node_modules/jQuery/dist/jquery.min.js")

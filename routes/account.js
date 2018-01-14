@@ -7,8 +7,7 @@ let {sessionModel, userModel} = require('../db-model');
 
 
 //“我的”页面初始化
-router.route('/profile.html')
-.get(function(req, res, next){
+router.get('/profile.html', function(req, res, next){
     //已登录
     if(req.session.user){
         res.render('account/profile');
@@ -29,7 +28,7 @@ let storage = multer.diskStorage({
   }
 })
 let upload = multer({
-    storage: storage,
+    storage,
     fileFilter: function (req, file, cb) {
         if(!isAbleUploadPic(file)){
             cb(new Error('该上传文件只支持扩展名为jpg、png、gif的文件'));
@@ -39,14 +38,15 @@ let upload = multer({
     },
     limits: {
         fileSize: 1024 * 1024 * 4,
-        files: 1
+        files: 5
     }
 });
+
 function isAbleUploadPic(file){
     return (/^image\/(jpeg|gif|png)$/).test(file.mimetype);
 }
 
-router.post('/account/uploadPicture.json', function(req, res, next) {
+router.post('/uploadPicture.json', function(req, res, next) {
     upload.single('headPic')(req, res, function(err){
         if(err){
             if(err.code === 'LIMIT_FILE_SIZE'){
@@ -72,7 +72,7 @@ router.post('/account/uploadPicture.json', function(req, res, next) {
 
 
 //更新个人信息
-router.route('/account/uploadProfile.json')
+router.route('/uploadProfile.json')
 .post(function(req, res, next){
     let user = req.session.user;
     user.picture = req.body.headPic;

@@ -82,6 +82,9 @@ define(function(require, exports, module) {
             success: function(data) {
                 var sessionList = data.content;
                 if (data.state === 1) {
+                    if(page === 1 && !sessionList.length){
+                        $('.people_list .no_msg').removeClass('dn');
+                    }
                     LGChat.addSessionList(sessionList);
                     //html渲染
                     render.renderAddSession(sessionList);
@@ -144,9 +147,10 @@ define(function(require, exports, module) {
             //标记已读
             askReaded(sessionId);
         }
-        if(!$('.no_msg').hasClass('dn')){
-            $('.no_msg').addClass('dn');
-            $('.had_msg').removeClass('dn');
+        let $noMsg = $('.msg_container .no_msg');
+        if(!$noMsg.hasClass('dn')){
+            $noMsg.addClass('dn');
+            $('.msg_container .had_msg').removeClass('dn');
         }
     })
     //删除会话
