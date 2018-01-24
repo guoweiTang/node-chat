@@ -1,3 +1,5 @@
+## 案例应用DEMO参考
+[聊天小demo](http://guoweitang.net)
 ## 使用
 - [LGChat](#dix)
   - [LGChat.on](#on) 监听事件
