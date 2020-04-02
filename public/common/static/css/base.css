@@ -33,6 +33,8 @@ body {
   color: #333;
   word-wrap: break-word;
   -webkit-font-smoothing: antialiased;
+  background: url(../img/body-bg.png) repeat-x 0 0 #f0eef5;
+  background-size: 5px 79px;
 }
 pre {
   font-family: "Hiragino Sans GB", "Microsoft Yahei", "SimSun", Arial, "Helvetica Neue", Helvetica;
@@ -62,9 +64,6 @@ a {
   color: #333;
   background-color: transparent;
   text-decoration: none;
-}
-a:hover {
-  color: #3dca99;
 }
 h1,
 h2,
@@ -303,8 +302,9 @@ textarea.active {
     padding-right: 40px;
 }
 .login_register a{
-    margin: 0 5px;
+    margin: 0 10px;
     text-decoration: underline;
+    color: #f1f1f1;
 }
 nav ul{
     width: 800px;
@@ -319,16 +319,30 @@ nav li{
 nav li:first-child{
     margin-left: 0;
 }
+nav a{
+  color: #f1f1f1;
+}
+nav a:hover {
+  text-shadow: 2px 3px 3px #000;
+}
+.container{
+  border: 1px solid #dedede;
+  width: 800px;
+  background-color: #fff;
+  margin: 0 auto;
+  padding: 40px;
+}
 .page_header{
     margin-bottom: 20px;
+    padding-bottom: 26px;
 }
 .page_footer{
   margin-top: 20px;
   text-align: center;
-  color: #d5d5d5;
+  color: #999;
   font-size: 12px;
 }
 .page_footer a{
   font-size: 12px;
-  color: #d5d5d5;
+  color: #999;
 }
