@@ -1,17 +1,20 @@
 /**
  * html渲染函数
- * @author ice@lagou.com
+ * @author tgwice@163.com
  */
 
 define(function(require, exports, module) {
     "use strict";
     var LGChat = require('/common/components/node-chat/api');
 
-    var $msgContainer = $('.msg_content'),
+    var $msgContent = $('.msg_content'),
         $mainMsgContent = $('.main_content'),
+        $peopleList = $('.people_list'),
+        $msgContainer = $('.msg_container'),
         //滚动至消息底部的定时器
         scrollBottomTimer = null;
-    //更新会话列表
+    
+    // 更新会话列表
     function renderAddSession(list, oldIndex) {
         var html = '',
             activeIndex = LGChat.getActiveIndex(),
@@ -20,21 +23,21 @@ define(function(require, exports, module) {
             list.forEach(function(item) {
                 html += renderSession(item);
             })
-            $('.people_list').append(html);
+            $peopleList.find('.had_msg').append(html);
         } else {
             //删除原位置会话
             if(typeof oldIndex !== 'undefined'){
-                $('.people_list .dialog').eq(oldIndex).remove();
+                $('.had_msg .dialog').eq(oldIndex).remove();
             }
             html = renderSession(list);
             //存在置顶会话
             if (topIndex > 0) {
-                $('.people_list .dialog').eq(topIndex - 1).after($(html));
+                $('.had_msg .dialog').eq(topIndex - 1).after($(html));
             } else {
-                $('.people_list').prepend(html);
+                $peopleList.find('.had_msg').prepend(html);
             }
             if (activeIndex >= 0) {
-                $('.people_list .dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
+                $('.had_msg .dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
             }
         }
     }
@@ -89,7 +92,7 @@ define(function(require, exports, module) {
     function renderUnread(sessionId) {
         var sessionIndex = LGChat.getIndexBySessionId(sessionId),
             session = LGChat.getAllSession()[sessionIndex];
-        var $unreadDom = $('.people_list .dialog').eq(sessionIndex).find('.unread_count');
+        var $unreadDom = $peopleList.find('.dialog').eq(sessionIndex).find('.unread_count');
         if (session.unreadCount === 0) {
             $unreadDom.addClass('dn').html(0);
         } else if (session.unreadCount > 99) {
@@ -137,7 +140,7 @@ define(function(require, exports, module) {
 
 
         $('.category_title a').html(allSession[sessionIndex].sessionName);
-        $('.people_list .dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
+        $peopleList.find('.dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
     }
 
     /**
@@ -149,7 +152,7 @@ define(function(require, exports, module) {
      */
     function scrollToBottom(type) {
 
-        var containerHeight = $msgContainer.outerHeight(),
+        var containerHeight = $msgContent.outerHeight(),
             oldMsgHeight = $mainMsgContent.outerHeight(),
             newMsgHeight,
             step = 0;
@@ -168,7 +171,7 @@ define(function(require, exports, module) {
                     }
                     var offsetTop = newMsgHeight - containerHeight;
                     if (offsetTop > 0) {
-                        $msgContainer.scrollTop(offsetTop + 100);
+                        $msgContent.scrollTop(offsetTop + 100);
                     }
                 } else {
                     return goBottom();
@@ -223,21 +226,28 @@ define(function(require, exports, module) {
     //删除会话
     function deleteSession(sessionId, oldIndex) {
         console.log('删除会话');
-        $('.people_list .dialog').eq(oldIndex).remove();
+        $peopleList.find('.dialog').eq(oldIndex).remove();
         var activeIndex = LGChat.getActiveIndex();
         if (activeIndex > oldIndex) {
-            $('.people_list .dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
+            $peopleList.find('.dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
+        // 显示无选中会话
+        } else if (activeIndex === -1) {
+            $msgContainer.find('.no_msg').removeClass('dn');
+            $msgContainer.find('.had_msg').addClass('dn');
         }
-        $('.no_msg').removeClass('dn');
-        $('.had_msg').addClass('dn');
+        // 显示无会话列表提示
+        if (LGChat.getAllSession().length < 1) {
+            $peopleList.find('.no_msg').removeClass('dn');
+            $peopleList.find('.had_msg').addClass('dn');
+        }
     }
     //置顶会话
     function goTopSession(sessionId, oldIndex) {
         console.log('置顶会话');
-        $('.people_list .dialog').eq(oldIndex).remove().prependTo($('.people_list'));
+        $peopleList.find('.dialog').eq(oldIndex).remove().prependTo($('.people_list'));
         var activeIndex = LGChat.getActiveIndex();
         if (activeIndex >= 0) {
-            $('.people_list .dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
+            $peopleList.find('.dialog').eq(activeIndex).addClass('active').siblings().removeClass('active');
         }
     }
 

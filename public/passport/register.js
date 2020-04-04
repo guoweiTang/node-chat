@@ -1,5 +1,5 @@
 /**
- * @author ice@lagou.com
+ * @author tgwice@163.com
  */
 
 define(function(require, exports, module) {

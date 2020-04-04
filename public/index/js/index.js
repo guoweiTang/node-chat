@@ -1,5 +1,5 @@
 /**
- * @author ice@lagou.com
+ * @author tgwice@163.com
  */
 
 define(function(require, exports, module) {
@@ -82,8 +82,12 @@ define(function(require, exports, module) {
             success: function(data) {
                 var sessionList = data.content;
                 if (data.state === 1) {
-                    if(page === 1 && !sessionList.length){
+                    if (page === 1 && !sessionList.length) {
                         $('.people_list .no_msg').removeClass('dn');
+                        $('.people_list .had_msg').addClass('dn');
+                    } else {
+                        $('.people_list .no_msg').addClass('dn');
+                        $('.people_list .had_msg').removeClass('dn');
                     }
                     LGChat.addSessionList(sessionList);
                     //html渲染
