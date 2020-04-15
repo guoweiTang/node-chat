@@ -8,9 +8,13 @@ require('./user');
 require('./session');
 require('./message');
 
-let db = mongoose.createConnection('localhost', 'mychat');
-db.on('error', function(err) {
-  throw err;
+let db = mongoose.createConnection('mongodb://localhost:27017/mychat', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}, function (err) {
+  if (err) {
+    throw err;
+  }
 });
 
 let userModel = db.model('users');
