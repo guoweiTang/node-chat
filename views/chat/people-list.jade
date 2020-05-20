@@ -12,10 +12,10 @@ block content
 							img(src="#{user.picture}", width="40", height="40")
 						if user.id == session.user.id
 							span #{user.name}（本人）
-							a(href="/chat", class="owner") 进入会话
+							a(href="/chatMain", class="owner") 进入会话
 						else
 							span #{user.name}
-							a(href="/chatPeopleList/createSession/#{user.id}") 发起会话
+							a(href="/peopleList/createSession/#{user.id}") 发起会话
 				
 block scripts
 	script require(['/chat/js/people-list'])
