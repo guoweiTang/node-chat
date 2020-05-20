@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
             })
             data.unshift(data.splice(tempIndex, 1)[0]);
 
-			res.render('index/entry', {
+			res.render('chat/people-list', {
 				users: data
 			})
 		})

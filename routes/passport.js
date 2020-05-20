@@ -56,7 +56,7 @@ router.post('/register.json', function(req, res, next){
                     status: 1,
                     message: 'success',
                     result: {
-                        url: config.pathPrefix.index + '/entry.html'
+                        url: config.pathPrefix.index
                     }
                 })
             })
@@ -68,7 +68,7 @@ router.post('/register.json', function(req, res, next){
 router.get('/login.html', function(req, res, next){
     //已登录
     if(req.session.user){
-        res.redirect(config.pathPrefix.index + '/entry.html');
+        res.redirect(config.pathPrefix.index);
     }else{
         res.render('passport/login');
     }
@@ -103,7 +103,7 @@ router.post('/login.json', function(req, res, next){
                 status: 1,
                 message: 'success',
                 result: {
-                    url: config.pathPrefix.index + '/entry.html'
+                    url: config.pathPrefix.index
                 }
             })
         }

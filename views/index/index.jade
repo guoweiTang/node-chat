@@ -2,34 +2,9 @@ extends ../layout
 block styles
 	link(rel='stylesheet', href='/index/css/index.css')
 block content
-	#imessage
-		.people_container.fl
-			.category_title 会话
-			.people_list
-				.no_msg 还没有会话哦，去
-					a(href="/chatPeopleList/entry.html") 结交朋友
-					span 吧！
-				.had_msg.dn
-		.msg_container.fr
-			.no_msg 聊天能拉近感情，快，让我们亲热亲热
-			.had_msg.dn
-				.category_title
-					a
-				.msg_content
-					.main_content
-				.session_form
-					form(novalidate)
-						.emoji_content.dn
-							i.arrow
-						label.dn
-							i.icons.icon-add
-							input(type="file", name="file", class="file_img", accept="image/*")
-						i.icons.icon-emoji
-						#text_area(placeholder="输入文本信息", contenteditable)
-						input(class="submit", type="submit", value="发送")
-				.uploading.dn
-					i.loading-icon
-					span 图片上传中...
+	.container
+		canvas.clock Your browser does not support the canvas element.
+		p.developing 敬请期待……
 block scripts
 	script require(['/index/js/index'])
 

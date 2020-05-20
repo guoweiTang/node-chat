@@ -4,18 +4,28 @@
 
 const express = require('express');
 const config = require('../lib/config');
-const main = require('./main');
-const entry = require('./entry');
+
 const passport = require('./passport');
+const index = require('./main');
 const account = require('./account');
+const peopleList = require('./people-list');
+const chat = require('./chat');
 
 let router = express.Router();
+
+// 登录、注册
 router.use(config.pathPrefix.auth, passport);
-router.use('/account', account);
-router.use(config.pathPrefix.chat, main);
-router.use(config.pathPrefix.index, entry);
-router.use('/', function(req, res, next){
-    res.redirect(301, config.pathPrefix.index);
-});
+
+// 首页
+router.use(config.pathPrefix.index, index);
+
+// 个人信息
+router.use(config.pathPrefix.account, account);
+
+// 注册用户列表
+router.use(config.pathPrefix.peopleList, peopleList);
+
+// 聊天
+router.use(config.pathPrefix.chat, chat);
 
 module.exports = router;

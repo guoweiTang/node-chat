@@ -1,6 +1,6 @@
 extends ../layout
 block styles
-	link(rel='stylesheet', href='/index/css/entry.css')
+	link(rel='stylesheet', href='/chat/css/people-list.css')
 block content
 	.container
 		h1 所有用户（#{users.length}人）
@@ -18,6 +18,6 @@ block content
 							a(href="/chatPeopleList/createSession/#{user.id}") 发起会话
 				
 block scripts
-	script require(['/index/js/entry'])
+	script require(['/chat/js/people-list'])
 
 
