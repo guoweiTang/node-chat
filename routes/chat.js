@@ -96,12 +96,12 @@ router.get('/getMessages.json', function(req, res, next) {
  */
 router.get('/sendMsg.json', function(req, res, next) {
     var message = {
-        "sessionId": req.param('sessionId'),
-        "msgType": req.param('msgType'), 
-        "senderId": req.param('senderId'), 
+        "sessionId": req.query.sessionId,
+        "msgType": req.query.msgType, 
+        "senderId": req.query.senderId, 
         "msgId": String(+ new Date()),
-        "msgContent": req.param('msgContent'), 
-        "createTime": req.param('createTime')
+        "msgContent": req.query.msgContent, 
+        "createTime": req.query.createTime
     }
     messageModel.create(message, function(err, data) {
         if(err){
@@ -123,7 +123,7 @@ router.get('/sendMsg.json', function(req, res, next) {
      */
     delete message.sessionId;
     sessionModel.updateOne({
-        "sessionId": req.param('sessionId')
+        "sessionId": req.query.sessionId
     }, {
         "lastMsg": message
     }, function(err, session) {
@@ -131,7 +131,7 @@ router.get('/sendMsg.json', function(req, res, next) {
         // console.log('update my session OK!');
     })
     //更新对方会话
-    let sessionIdArr = req.param('sessionId').split('-');
+    let sessionIdArr = req.query.sessionId.split('-');
     let othersSessionId = [sessionIdArr[1], sessionIdArr[0]].join('-');
     sessionModel.findOne({
         "sessionId": othersSessionId
@@ -153,7 +153,7 @@ router.get('/sendMsg.json', function(req, res, next) {
  * 更新已读状态
  */
 router.get('/readed.json', function(req, res, next) {
-    let reqSessionId = req.param('sessionId');
+    let reqSessionId = req.query.sessionId;
     sessionModel.updateOne({
         "sessionId": reqSessionId
     }, {
@@ -168,8 +168,8 @@ router.get('/readed.json', function(req, res, next) {
     })
 });
 router.get('/updateSession.json', function(req, res, next) {
-    let reqSessionId = req.param('sessionId');
-    let status = req.param('status');
+    let reqSessionId = req.query.sessionId;
+    let status = req.query.status;
     sessionModel.findOneAndUpdate({
         "sessionId": reqSessionId
     }, {
