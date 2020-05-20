@@ -1,0 +1,48 @@
+.container{
+  width: 400px;
+  margin: 0 auto;
+}
+h1{
+	text-align: center;
+}
+.login_userlist li img{
+	border-radius: 50%;
+	margin-right: 10px;
+}
+.login_userlist li{
+	line-height: 40px;
+	overflow: inherit;
+	padding: 5px;
+	margin-top: 20px;
+	border-bottom: 1px solid #eee;
+}
+.login_userlist li:after{
+	content: '';
+	display: block;
+}
+.login_userlist li i,
+.login_userlist li span,
+.login_userlist li a{
+	display: inline-block;
+	vertical-align: middle;
+}
+.login_userlist li a{
+	margin-top: 5px;
+	line-height: 30px;
+	height: 30px;
+	padding: 0 10px;
+	background-color: #00b38a;
+	float: right;
+	border-radius: 3px;
+	color: #fff;
+}
+.login_userlist li a.owner{
+	background-color: #0081b3;
+}
+.login_userlist li a:hover{
+	color: #fff;
+	background-color: #00a57f;
+}
+.login_userlist li a.owner:hover{
+	background-color: #0069b3;
+}
