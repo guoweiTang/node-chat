@@ -1,6 +1,10 @@
 extends layout
 
+block styles
+  link(rel='stylesheet', href='/error/css/main.css')
+  
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+  div.errorContainer
+    img(src="/error/img/404.png", width="500")
+    p.tips 出错了，您访问的链接不存在！
+    //- pre #{error.stack}
