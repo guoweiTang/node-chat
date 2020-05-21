@@ -42,7 +42,7 @@ define(function (require, exports, module) {
     ctx.fill();
 
     // 时针
-    let timeArr = t.toLocaleString().split(' ')[1].match(/\d+/g);
+    let timeArr = t.toLocaleTimeString().match(/\d+/g);
     let scaleH = (Number(timeArr[0]) * 3600 + Number(timeArr[1] * 60) + Number(timeArr[2])) / (12 * 3600);
     ctx.beginPath();
     ctx.moveTo(w, w);
