@@ -187,8 +187,17 @@ define(function(require, exports, module) {
 
     //发送消息
     $('form').on('submit', function(event) {
-        var msg = LGChat.emojiUtil.getStringByImage($('#text_area').html());
-        var content = {
+        // 不允许发送空消息
+        var formatHtml = $('#text_area').html().replace(/^(&nbsp;\s?)+|(&nbsp;\s?)+$/mg,'').trim(),
+            msg,
+            content;
+        if (formatHtml === '') {
+            event.preventDefault();
+            return false;
+        }
+
+        msg = LGChat.emojiUtil.getStringByImage(formatHtml);
+        content = {
             "sessionId":LGChat.getAllSession()[LGChat.getActiveIndex()].sessionId,
             "msgType":0,
             "senderId": $('#USERID').val(),
