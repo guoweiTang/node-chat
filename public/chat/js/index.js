@@ -236,6 +236,12 @@ define(function(require, exports, module) {
             event.preventDefault();
         };
     });
+    // 防止粘贴输入html标签
+    $('#text_area').on('paste', function(e) {
+        $(this).html(event.clipboardData.getData('text/plain').replace(/<[a-z]+[^>]*>/img, ''));
+        e.preventDefault();
+        return false;
+    })
 
     //加入表情
     $(document).on('click', '.icon-emoji', function() {
