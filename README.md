@@ -1,5 +1,22 @@
 ## 案例应用DEMO参考
 [聊天小demo](http://guoweitang.net)
+## 启动
+进入项目根目录：
+```shell
+~ npm install
+```
+进入./public目录下：
+```shell
+~ npm install
+```
+启动mongodb：
+```shell
+~ mongod
+```
+返回项目根目录：
+```shell
+~ npm run dev
+```
 ## 使用
 - [LGChat](#dix)
   - [LGChat.on](#on) 监听事件
