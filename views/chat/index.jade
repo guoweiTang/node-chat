@@ -3,14 +3,14 @@ block styles
 	link(rel='stylesheet', href='/chat/css/index.css')
 block content
 	#imessage
-		.people_container.fl
+		.people_container
 			.category_title 会话
 			.people_list
 				.no_msg 还没有会话哦，去
 					a(href="/chatPeopleList/entry.html") 结交朋友
 					span 吧！
 				.had_msg.dn
-		.msg_container.fr
+		.msg_container.dn
 			.no_msg 聊天能拉近感情，快，让我们亲热亲热
 			.had_msg.dn
 				.category_title
@@ -24,9 +24,10 @@ block content
 						label.dn
 							i.icons.icon-add
 							input(type="file", name="file", class="file_img", accept="image/*")
-						i.icons.icon-emoji
-						#text_area(placeholder="输入文本信息", contenteditable)
-						input(class="submit", type="submit", value="发送")
+						div.enter_entry
+							i.icons.icon-emoji
+							#text_area(placeholder="输入文本信息", contenteditable)
+							input(class="submit", type="submit", value="发送")
 				.uploading.dn
 					i.loading-icon
 					span 图片上传中...

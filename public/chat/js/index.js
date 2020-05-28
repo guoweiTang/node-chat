@@ -135,8 +135,14 @@ define(function(require, exports, module) {
         $('.emoji_content').append(defaultEmojiHtml);
     })();
     
+    // 交替切换会话记录显示
+    function toggleSessions() {
+        $('.people_container').toggle();
+        $('.msg_container').toggle();
+    }
 
     /***********************事件绑定***********************/
+    $('.msg_container').on('click', '.category_title', toggleSessions)
     //切换会话
     $('.people_list').on('click', '.dialog', function() {
         var prevActiveIndex = LGChat.getActiveIndex(),
@@ -151,6 +157,9 @@ define(function(require, exports, module) {
             //标记已读
             askReaded(sessionId);
         }
+        //显示会话内容
+        toggleSessions();
+
         let $noMsg = $('.msg_container .no_msg');
         if(!$noMsg.hasClass('dn')){
             $noMsg.addClass('dn');

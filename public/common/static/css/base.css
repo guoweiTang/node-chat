@@ -25,16 +25,23 @@
 * {
   outline: none;
 }
+html,
+body {
+  height: 100%;
+}
+html {
+  background-color: #f0eef5;
+}
 body {
   margin: 0;
   padding: 0;
-  font-size: 14px;
+  font-size: .44rem;
   font-family: "Hiragino Sans GB", "Microsoft Yahei", "SimSun", Arial, "Helvetica Neue", Helvetica;
   color: #333;
   word-wrap: break-word;
   -webkit-font-smoothing: antialiased;
-  background: url(../img/body-bg.png) repeat-x 0 0 #f0eef5;
-  background-size: 5px 79px;
+  background: url(../img/body-bg.png) repeat-x;
+  background-size: .03rem 1.25rem;
 }
 pre {
   font-family: "Hiragino Sans GB", "Microsoft Yahei", "SimSun", Arial, "Helvetica Neue", Helvetica;
@@ -53,6 +60,9 @@ main,
 menu,
 nav,
 section,
+audio,
+video,
+canvas,
 summary {
   display: block;
 }
@@ -65,30 +75,33 @@ a {
   background-color: transparent;
   text-decoration: none;
 }
+a:hover {
+  text-decoration: none;
+}
 h1,
 h2,
 h3,
 h4 {
-  margin: 10px 0;
+  margin: .16rem 0;
   font-weight: normal;
 }
 h1 {
-  font-size: 24px;
+  font-size: .56rem;
 }
 h2 {
-  font-size: 20px;
+  font-size: .5rem;
 }
 h3 {
-  font-size: 18px;
+  font-size: .44rem;
 }
 h4 {
-  font-size: 16px;
+  font-size: .41rem;
 }
 p {
   margin: 0;
 }
 p + p {
-  margin-top: 10px;
+  margin-top: .16rem;
 }
 img {
   border: 0;
@@ -100,6 +113,7 @@ input,
 optgroup,
 select,
 textarea {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
   border: 1px solid #ededed;
@@ -198,8 +212,8 @@ ol {
 }
 p.error {
   color: #ed7266;
-  margin-top: 4px;
-  font-size: 12px;
+  margin-top: .06rem;
+  font-size: .25rem;
 }
 input[type=text].active,
 textarea.active {
@@ -297,23 +311,23 @@ textarea.active {
   background-color: #fff;
 }
 .login_register{
-    line-height: 26px;
+    line-height: .44rem;
     text-align: right;
-    padding-right: 40px;
+    padding-right: .63rem;
 }
 .login_register a{
-    margin: 0 10px;
+    margin: 0 .16rem;
     text-decoration: underline;
     color: #f1f1f1;
 }
 nav ul{
-    width: 800px;
+    width: 9.38rem;
     margin: 0 auto;
 }
 nav li{
     float: left;
-    margin-left: 10px;
-    font-size: 18px;
+    margin-left: .16rem;
+    font-size: .44rem;
     font-weight: bold;
 }
 nav li:first-child{
@@ -322,27 +336,25 @@ nav li:first-child{
 nav a{
   color: #f1f1f1;
 }
-nav a:hover {
-  text-shadow: 2px 3px 3px #000;
-}
 .container{
   border: 1px solid #dedede;
-  width: 800px;
+  box-sizing: border-box;
+  width: 9.38rem;
   background-color: #fff;
   margin: 0 auto;
-  padding: 40px;
+  padding: .63rem 0;
 }
 .page_header{
-    margin-bottom: 20px;
-    padding-bottom: 26px;
+    margin-bottom: .31rem;
+    padding-bottom: .44rem;
 }
 .page_footer{
-  margin-top: 20px;
+  margin-top: .31rem;
   text-align: center;
   color: #999;
-  font-size: 12px;
+  font-size: .31rem;
 }
 .page_footer a{
-  font-size: 12px;
+  font-size: .31rem;
   color: #999;
 }
