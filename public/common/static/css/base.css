@@ -317,8 +317,8 @@ textarea.active {
 }
 .login_register a{
     margin: 0 .16rem;
-    text-decoration: underline;
     color: #f1f1f1;
+    font-size: .31rem;
 }
 nav ul{
     width: 9.38rem;

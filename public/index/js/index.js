@@ -5,7 +5,7 @@
 define(function (require, exports, module) {
   let lock = $('.clock').get(0);
   let ctx = lock.getContext('2d');
-  let canvasW = 100;
+  let canvasW = 60;
   lock.width = canvasW * 2;
   lock.height = canvasW * 2;
   let timer = null; //计时器
@@ -17,7 +17,7 @@ define(function (require, exports, module) {
     ctx.clearRect(0, 0, 2 * w, 2 * w);
     let t = new Date();
     // 表盘
-    let lineWidth = 10;
+    let lineWidth = 6;
     let r = w - lineWidth;
     ctx.beginPath();
     ctx.lineWidth = lineWidth;
