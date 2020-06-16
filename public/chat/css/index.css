@@ -266,7 +266,7 @@
   overflow-y: scroll;
 }
 #imessage .main_content {
-  margin: 0 20px 20px;
+  margin: 0 .4rem .4rem;
 }
 #imessage .session_tips {
   font-size: 12px;
@@ -363,15 +363,20 @@
   float: left;
 }
 #imessage .session_bubble dt {
-  width: 38px;
-  height: 38px;
+  width: 12%;
+}
+#imessage .session_bubble dt img {
+  width: 100%;
+  height: 100%;
 }
 #imessage .session_bubble dd {
   position: relative;
-  max-width: 380px;
+  max-width: -webkit-calc(88% - 16px);
+  max-width: calc(88% - 16px);
   background-color: #e9eeef;
-  margin: 0 16px;
+  margin-right: 16px;
   padding: 10px 16px;
+  box-sizing: border-box;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -480,9 +485,10 @@
   height: 1rem;
   box-sizing: border-box;
   padding: .2rem .3rem;
+  line-height: .6rem;
   width: 60%;
   border: 1px solid #dce0e0;
-  font-size: .4rem;
+  font-size: 12px;
   text-align: left;
   overflow: hidden;
 }
@@ -561,4 +567,9 @@
   height: calc(1.25rem - 1px);
   justify-content: space-around;
   align-items: center;
+}
+@media screen and (min-width: 400px) {
+  #imessage .session_form #text_area {
+    font-size: 14px;
+  }
 }
