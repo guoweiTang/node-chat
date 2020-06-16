@@ -345,6 +345,7 @@
 #imessage .session_bubble.myself dd {
   background-color: #3dca99;
   color: #fff;
+  margin: 0 16px 0 0;
 }
 #imessage .session_bubble.myself dd.playing .audio-icon {
   background-image: url(../img/voice-white.gif);
@@ -375,7 +376,7 @@
   max-width: -webkit-calc(88% - 16px);
   max-width: calc(88% - 16px);
   background-color: #e9eeef;
-  margin-right: 16px;
+  margin: 0 0 0 16px;
   padding: 10px 16px;
   box-sizing: border-box;
   -webkit-border-radius: 6px;
