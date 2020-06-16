@@ -116,7 +116,7 @@
 }
 #imessage .people_container .unread_count {
   position: absolute;
-  left: 30px;
+  right: -11px;
   top: -11px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
