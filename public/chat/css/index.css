@@ -78,6 +78,7 @@
 }
 #imessage .people_container dt {
   width: 1rem;
+  height: 1rem;
   position: relative;
 }
 #imessage .people_container dt img {
