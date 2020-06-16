@@ -213,7 +213,7 @@ define(function(require, exports, module) {
         return [msgTimebarHtml,
             '<dl class="session_bubble' + (isMyself ? ' myself' : '') + '">',
             '    <dt>',
-            '        <a target="_blank" href="/user/2.html"> <img width="38" height="38" src="' + (isMyself ? $('#USERPIC').val() : icon) + '" /> </a>',
+            '        <img width="38" height="38" src="' + (isMyself ? $('#USERPIC').val() : icon) + '" />',
             '    </dt>',
             '    <dd>',
             '        <span class="arrow"></span>',
