@@ -365,11 +365,16 @@
   float: left;
 }
 #imessage .session_bubble dt {
+  position: relative;
   width: 12%;
+  padding-top: 12%;
 }
 #imessage .session_bubble dt img {
+  position: absolute;
   width: 100%;
   height: 100%;
+  left: 0;
+  top: 0;
 }
 #imessage .session_bubble dd {
   position: relative;
